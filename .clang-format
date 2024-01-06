@@ -1,0 +1,40 @@
+---
+BasedOnStyle: Chromium
+---
+Language: Cpp
+AccessModifierOffset: -2
+AlignAfterOpenBracket: DontAlign
+AlignEscapedNewlines: Right
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortEnumsOnASingleLine: false
+BinPackParameters: true
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: false
+  AfterControlStatement: Never
+  AfterEnum: false
+  AfterFunction: true
+  AfterNamespace: false
+  AfterObjCDeclaration: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: false
+  BeforeElse: false
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+BreakBeforeBraces: Custom
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '<([A-Za-z0-9\Q/-_\E])+>'
+    Priority: 3
+  - Regex: '<([A-Za-z0-9.\Q/-_\E])+>'
+    Priority: 2
+  - Regex: '"([A-Za-z0-9.\Q/-_\E])+"'
+    Priority: 1
+IndentWidth: 4
+PointerAlignment: Right

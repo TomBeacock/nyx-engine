@@ -1,0 +1,14 @@
+add_library(nyx STATIC
+	"../include/nyx/nyx.h"
+	"../include/nyx/init.h"
+	"../include/nyx/app.h" "app.cpp"
+)
+
+set_target_properties(nyx PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED on)
+
+target_include_directories(nyx PUBLIC "${PROJECT_SOURCE_DIR}/include")
+target_include_directories(nyx PRIVATE "${PROJECT_SOURCE_DIR}/src")
+
+if(WIN32)
+	target_sources(nyx PRIVATE "platform/msw/init.cpp")
+endif()
