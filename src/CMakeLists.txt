@@ -1,6 +1,6 @@
 add_library(nyx STATIC
 	"../include/nyx/nyx.h"
-	"../include/nyx/init.h"
+	"../include/nyx/init.h" "init.cpp"
 	"../include/nyx/app.h" "app.cpp"
 )
 
@@ -10,5 +10,8 @@ target_include_directories(nyx PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_include_directories(nyx PRIVATE "${PROJECT_SOURCE_DIR}/src")
 
 if(WIN32)
-	target_sources(nyx PRIVATE "platform/msw/init.cpp")
+	target_sources(nyx PRIVATE
+		"platform/msw/msw.h"
+		"platform/msw/window.h" "platform/msw/window.cpp"
+	)
 endif()
