@@ -9,6 +9,8 @@ class Event {
     };
 
   public:
+    Event() = default;
+    Event(const Event &e) = delete;
     ~Event() { delete this->data; }
 
     inline const Type &get_type() const { return this->type; }
@@ -19,6 +21,8 @@ class Event {
 
     template <typename T, typename... Args>
     inline void set_data(Args... args);
+
+    Event &operator=(const Event &e) = delete;
 
   private:
     Type type = None;

@@ -1,6 +1,7 @@
 #include "window.h"
 
 #include "nyx/event.h"
+#include "string_util.h"
 
 std::unique_ptr<Nyx::Window> Nyx::Window::create()
 {
@@ -30,18 +31,35 @@ Nyx::MSW::Window::~Window()
 
 void Nyx::MSW::Window::show()
 {
-    STARTUPINFO startup_info{};
-    GetStartupInfo(&startup_info);
-    int cmd_show = SW_SHOWDEFAULT;
-    if (startup_info.dwFlags & STARTF_USESHOWWINDOW) {
-        cmd_show = startup_info.wShowWindow;
-    }
-    ShowWindow(this->handle, cmd_show);
+    ShowWindow(this->handle, SW_SHOWDEFAULT);
 }
 
-void Nyx::MSW::Window::minimise() {}
+void Nyx::MSW::Window::minimise()
+{
+    WINDOWPLACEMENT placement{
+        .length = sizeof(WINDOWPLACEMENT),
+        .showCmd = SW_MINIMIZE,
+    };
+    SetWindowPlacement(this->handle, &placement);
+}
 
-void Nyx::MSW::Window::maximise() {}
+void Nyx::MSW::Window::maximise()
+{
+    WINDOWPLACEMENT placement{
+        .length = sizeof(WINDOWPLACEMENT),
+        .showCmd = SW_MAXIMIZE,
+    };
+    SetWindowPlacement(this->handle, &placement);
+}
+
+void Nyx::MSW::Window::restore()
+{
+    WINDOWPLACEMENT placement{
+        .length = sizeof(WINDOWPLACEMENT),
+        .showCmd = SW_RESTORE,
+    };
+    SetWindowPlacement(this->handle, &placement);
+}
 
 bool Nyx::MSW::Window::poll_event(Event &event)
 {
@@ -55,16 +73,10 @@ bool Nyx::MSW::Window::poll_event(Event &event)
     return false;
 }
 
-LRESULT Nyx::MSW::Window::handle_message(
-    UINT msg, WPARAM w_param, LPARAM l_param)
+void Nyx::MSW::Window::set_title(const std::u8string &title)
 {
-    switch (msg) {
-        case WM_CLOSE: {
-            this->event->set_type(Event::Close);
-            return 0;
-        }
-    }
-    return DefWindowProc(this->handle, msg, w_param, l_param);
+    std::wstring wide_title = Nyx::MSW::utf8_to_wstring(title);
+    SetWindowText(this->handle, wide_title.c_str());
 }
 
 LRESULT Nyx::MSW::Window::proc(
@@ -84,4 +96,16 @@ LRESULT Nyx::MSW::Window::proc(
     } else {
         return DefWindowProc(wnd, msg, w_param, l_param);
     }
+}
+
+LRESULT Nyx::MSW::Window::handle_message(
+    UINT msg, WPARAM w_param, LPARAM l_param)
+{
+    switch (msg) {
+        case WM_CLOSE: {
+            this->event->set_type(Event::Close);
+            return 0;
+        }
+    }
+    return DefWindowProc(this->handle, msg, w_param, l_param);
 }

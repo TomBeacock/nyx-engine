@@ -8,13 +8,11 @@ Nyx::App::App() : window(Nyx::Window::create())
     this->window->show();
 }
 
-Nyx::App::~App() {}
-
 void Nyx::App::execute()
 {
     this->executing = true;
     while (this->executing) {
-        Event e;
+        Event e{};
         while (this->window->poll_event(e)) {
             if (e.get_type() == Event::Close) {
                 this->executing = false;

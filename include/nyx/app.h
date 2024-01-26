@@ -24,9 +24,16 @@ class Window;
 class App {
   public:
     App();
-    ~App();
+    App(const App &) = delete;
+    App(const App &&) = delete;
+    virtual ~App() = default;
 
     void execute();
+
+    Window &get_window() { return *this->window; }
+
+    App &operator=(const App &) = delete;
+    App &operator=(const App &&) = delete;
 
   private:
     bool executing = false;
