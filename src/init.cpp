@@ -1,6 +1,6 @@
 #include "nyx/init.h"
 
-#include "nyx/app.h"
+#include "nyx/system/app.h"
 
 namespace Nyx {
 void launch(int argc, char **argv)

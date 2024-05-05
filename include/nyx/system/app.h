@@ -20,10 +20,10 @@
 
 namespace Nyx {
 class Window;
+class Event;
 
 class App {
   public:
-    App();
     App(const App &) = delete;
     App(const App &&) = delete;
     virtual ~App() = default;
@@ -34,6 +34,12 @@ class App {
 
     App &operator=(const App &) = delete;
     App &operator=(const App &&) = delete;
+
+  protected:
+    App();
+
+  private:
+    void handle_event(const Event &e);
 
   private:
     bool executing = false;
