@@ -1,3 +1,5 @@
+message(STATUS "Building engine...")
+
 add_library(nyx STATIC
 	"../include/nyx/nyx.h"
 	"../include/nyx/init.h" "init.cpp"
@@ -29,15 +31,17 @@ target_include_directories(nyx PRIVATE "${PROJECT_SOURCE_DIR}/src")
 string(LENGTH "${CMAKE_SOURCE_DIR}/" source_path_length)
 target_compile_definitions(nyx PUBLIC SOURCE_PATH_LENGTH=${source_path_length})
 
-string(TOLOWER ${CMAKE_BUILD_TYPE} build_type)
+if(CMAKE_BUILD_TYPE)
+	string(TOUPPER ${CMAKE_BUILD_TYPE} build_type)
+endif()
 
 # Enable/disable logging
-if(build_type STREQUAL debug OR build_type STREQUAL relwithdebinfo)
+if(build_type STREQUAL "DEBUG" OR build_type STREQUAL "RELWITHDEBINFO")
 	target_compile_definitions(nyx PUBLIC NYX_LOGGING_ENABLED)
 endif()
 
 # Enable/disable assert
-if(build_type STREQUAL debug)
+if(build_type STREQUAL "DEBUG")
 	target_compile_definitions(nyx PUBLIC NYX_ASSERTS_ENABLED)
 endif()
 
