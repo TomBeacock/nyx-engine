@@ -1,5 +1,8 @@
 #pragma once
 
+#include <ostream>
+#include <string>
+
 namespace Nyx::Math {
 template <size_t L, typename T>
 struct Vector;
@@ -30,6 +33,12 @@ Vector<L, T> reflect(const Vector<L, T> &v, const Vector<L, T> &normal);
 
 template <size_t L, typename T>
 inline T sqr_magnitude(const Vector<L, T> &v);
+
+template <size_t L, typename T>
+inline std::string to_string(const Vector<L, T> &v);
+
+template <size_t L, typename T>
+inline std::ostream &operator<<(std::ostream &os, const Vector<L, T> &v);
 }  // namespace Nyx::Math
 
 #include "vector_func.inl"

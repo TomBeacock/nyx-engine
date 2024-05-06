@@ -1,6 +1,8 @@
 #include "nyx/system/app.h"
 
+#include "nyx/assert.h"
 #include "nyx/events.h"
+#include "nyx/log.h"
 #include "nyx/system/window.h"
 
 #include <iostream>
@@ -29,24 +31,25 @@ void App::handle_event(const Event &event)
         return;
     }
     if (const auto data = event.get_if<Nyx::Event::KeyPressed>()) {
+        NYX_LOG("{}", data->key_code);
         return;
     }
     if (const auto data = event.get_if<Nyx::Event::KeyReleased>()) {
         return;
     }
     if (const auto data = event.get_if<Nyx::Event::MouseButtonPressed>()) {
-        std::cout << data->mouse_button << data->position << std::endl;
+        NYX_LOG("{} {}", data->mouse_button, data->position);
         return;
     }
     if (const auto data = event.get_if<Nyx::Event::MouseButtonReleased>()) {
         return;
     }
     if (const auto data = event.get_if<Nyx::Event::MouseWheelScrolled>()) {
-        std::cout << data->delta << std::endl;
+        NYX_LOG("{}", data->delta);
         return;
     }
     if (const auto data = event.get_if<Nyx::Event::MouseMoved>()) {
-        std::cout << data->position << ' ' << data->delta << std::endl;
+        NYX_LOG("{} {}", data->position, data->delta);
         return;
     }
 }

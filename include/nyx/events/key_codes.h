@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <format>
 #include <ostream>
 
 namespace Nyx {
@@ -376,20 +377,51 @@ enum class ScanCode : uint16_t {
     WebBookmarks = 0xC22A,
 };
 
+inline std::string to_string(KeyCode key_code)
+{
+    return std::format("{}", key_code);
+}
+
+inline std::string to_string(ScanCode scan_code)
+{
+    return std::format("{}", scan_code);
+}
+
 inline std::ostream &operator<<(std::ostream &os, KeyCode key_code)
 {
-    std::underlying_type_t<KeyCode> val =
-        static_cast<std::underlying_type_t<KeyCode>>(key_code);
-    if (val >= '!' && val <= 'z') {
-        return os << "Key Code: " << static_cast<char>(val);
-    }
-    return os << "Key Code: " << val;
+    return os << to_string(key_code);
 }
 
 inline std::ostream &operator<<(std::ostream &os, ScanCode scan_code)
 {
-    std::underlying_type_t<ScanCode> val =
-        static_cast<std::underlying_type_t<ScanCode>>(scan_code);
-    return os << "Scan Code: " << val;
+    return os << to_string(scan_code);
 }
 }  // namespace Nyx
+
+template <>
+struct std::formatter<Nyx::KeyCode> {
+    constexpr auto parse(std::format_parse_context &ctx) { return ctx.begin(); }
+
+    auto format(const Nyx::KeyCode &key_code, std::format_context &ctx) const
+    {
+        std::underlying_type_t<Nyx::KeyCode> val =
+            static_cast<std::underlying_type_t<Nyx::KeyCode>>(key_code);
+        if (val >= ' ' && val <= 'z') {
+            return std::format_to(
+                ctx.out(), "{} ('{}')", val, static_cast<char>(val));
+        }
+        return std::format_to(ctx.out(), "{}", val);
+    }
+};
+
+template <>
+struct std::formatter<Nyx::ScanCode> {
+    constexpr auto parse(std::format_parse_context &ctx) { return ctx.begin(); }
+
+    auto format(const Nyx::ScanCode &scan_code, std::format_context &ctx) const
+    {
+        std::underlying_type_t<Nyx::ScanCode> val =
+            static_cast<std::underlying_type_t<Nyx::ScanCode>>(scan_code);
+        return std::format_to(ctx.out(), "{}", val);
+    }
+};

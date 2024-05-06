@@ -2,6 +2,8 @@
 #include "trigonometric.h"
 #include "vector_func.h"
 
+#include <format>
+
 namespace Nyx::Math {
 template <typename T>
 inline T angle(const Vector<2, T> &v1, const Vector<2, T> &v2)
@@ -43,7 +45,7 @@ inline Vector<L, T> lerp(
 template <size_t L, typename T>
 inline T magnitude(const Vector<L, T> &v)
 {
-    return std::sqrt(sqr_magnitude(v));
+    return static_cast<T>(std::sqrt(sqr_magnitude(v)));
 }
 
 template <size_t L, typename T>
@@ -62,5 +64,17 @@ template <size_t L, typename T>
 inline T sqr_magnitude(const Vector<L, T> &v)
 {
     return dot(v, v);
+}
+
+template <size_t L, typename T>
+inline std::string to_string(const Vector<L, T> &v)
+{
+    return std::format("{}", v);
+}
+
+template <size_t L, typename T>
+inline std::ostream &operator<<(std::ostream &os, const Vector<L, T> &v)
+{
+    return os << to_string(v);
 }
 }  // namespace Nyx::Math

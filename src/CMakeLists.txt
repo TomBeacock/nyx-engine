@@ -1,6 +1,8 @@
 add_library(nyx STATIC
 	"../include/nyx/nyx.h"
 	"../include/nyx/init.h" "init.cpp"
+	"../include/nyx/log.h"
+	"../include/nyx/assert.h"
 
 	"../include/nyx/system/app.h" "system/app.cpp"
 	"../include/nyx/system/window.h" "system/window.cpp" 
@@ -24,6 +26,22 @@ set_target_properties(nyx PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED on)
 target_include_directories(nyx PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_include_directories(nyx PRIVATE "${PROJECT_SOURCE_DIR}/src")
 
+string(LENGTH "${CMAKE_SOURCE_DIR}/" source_path_length)
+target_compile_definitions(nyx PUBLIC SOURCE_PATH_LENGTH=${source_path_length})
+
+string(TOLOWER ${CMAKE_BUILD_TYPE} build_type)
+
+# Enable/disable logging
+if(build_type STREQUAL debug OR build_type STREQUAL relwithdebinfo)
+	target_compile_definitions(nyx PUBLIC NYX_LOGGING_ENABLED)
+endif()
+
+# Enable/disable assert
+if(build_type STREQUAL debug)
+	target_compile_definitions(nyx PUBLIC NYX_ASSERTS_ENABLED)
+endif()
+
+# Platform
 if(WIN32)
 	target_compile_definitions(nyx PUBLIC NYX_PLATFORM_MSW)
 	target_sources(nyx PRIVATE
@@ -32,4 +50,9 @@ if(WIN32)
 		"platform/msw/window_impl.h" "platform/msw/window_impl.cpp"
 		"platform/msw/code_translation.h" "platform/msw/code_translation.cpp"
 	)
+endif()
+
+# Compiler
+if(MSVC)
+	target_compile_options(nyx PUBLIC /Zc:preprocessor)
 endif()

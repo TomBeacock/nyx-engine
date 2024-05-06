@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ostream>
+#include <format>
 
 namespace Nyx::Math {
 template <size_t L, typename T>
@@ -95,7 +95,15 @@ template <typename T>
 bool operator!=(const Vector<4, T> &v1, const Vector<4, T> &v2);
 
 template <typename T>
-inline std::ostream &operator<<(std::ostream &os, const Vector<4, T> &x);
+struct std::formatter<Vector<4, T>> {
+    constexpr auto parse(std::format_parse_context &ctx) { return ctx.begin(); }
+
+    auto format(
+        const Nyx::Math::Vector<4, T> &v, std::format_context &ctx) const
+    {
+        return std::format_to(ctx.out(), "[{},{},{},{}]", v.x, v.y, v.z, v.w);
+    }
+};
 }  // namespace Nyx::Math
 
 #include "vector4.inl"

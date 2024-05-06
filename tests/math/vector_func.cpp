@@ -5,9 +5,11 @@ using namespace Nyx::Math;
 
 TEST(vector_func, angle)
 {
-    EXPECT_FLOAT_EQ(pi / 2.0f, angle(Float2(0, 1), Float2(1, 0)));
-    EXPECT_FLOAT_EQ(pi, angle(Float2(-1, 0), Float2(1, 0)));
-    EXPECT_DOUBLE_EQ(pi / 4.0, angle(Double2(0, 1), normalize(Double2(1, 1))));
+    EXPECT_FLOAT_EQ(
+        static_cast<float>(pi) / 2.0f, angle(Float2(0, 1), Float2(1, 0)));
+    EXPECT_FLOAT_EQ(static_cast<float>(pi), angle(Float2(-1, 0), Float2(1, 0)));
+    EXPECT_DOUBLE_EQ(static_cast<float>(pi) / 4.0,
+        angle(Double2(0, 1), normalize(Double2(1, 1))));
 }
 
 TEST(vector_func, distance)

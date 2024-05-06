@@ -256,10 +256,4 @@ bool operator!=(const Vector<2, T> &v1, const Vector<2, T> &v2)
 {
     return !(v1 == v2);
 }
-
-template <typename T>
-std::ostream &operator<<(std::ostream &os, const Vector<2, T> &v)
-{
-    return os << '[' << v.x << ',' << v.y << ']';
-}
 }  // namespace Nyx::Math
