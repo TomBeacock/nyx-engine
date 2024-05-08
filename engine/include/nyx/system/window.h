@@ -55,7 +55,28 @@ class Window {
      */
     void set_cursor_visibility(bool visible);
 
+    /**
+     * Get the width of the client area of the window
+     */
+    uint32_t get_client_width() const;
+
+    /**
+     * Get the height of the client area of the window
+     */
+    uint32_t get_client_height() const;
+
+    /**
+     * Get the underlying platform implementation
+     *
+     * @return The platform implmentatioin
+     */
+    const WindowImpl &get_impl() const;
+
+  private:
+    void filter_event(const Event &event);
+
   private:
     std::unique_ptr<WindowImpl> window_impl;
+    uint32_t width, height;
 };
 }  // namespace Nyx

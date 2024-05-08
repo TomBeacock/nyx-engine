@@ -23,13 +23,17 @@ add_library(nyx STATIC
 	"../include/nyx/math/vector2.h" "../include/nyx/math/vector2.inl" 
 	"../include/nyx/math/vector3.h" "../include/nyx/math/vector3.inl"
 	"../include/nyx/math/vector4.h" "../include/nyx/math/vector4.inl"
-)
+
+	"rendering/renderer.h" "rendering/renderer.cpp"
+	"rendering/renderer_impl.h" 
+ "rendering/renderer_impl.cpp")
 set_target_properties(nyx PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED on)
 target_include_directories(nyx PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_include_directories(nyx PRIVATE "${PROJECT_SOURCE_DIR}/src")
 
 string(LENGTH "${CMAKE_SOURCE_DIR}/" source_path_length)
 target_compile_definitions(nyx PUBLIC SOURCE_PATH_LENGTH=${source_path_length})
+target_compile_definitions(nyx PUBLIC NYX_RES_DIR="${PROJECT_SOURCE_DIR}/res/")
 
 if(CMAKE_BUILD_TYPE)
 	string(TOUPPER ${CMAKE_BUILD_TYPE} build_type)
@@ -54,6 +58,14 @@ if(WIN32)
 		"platform/msw/window_impl.h" "platform/msw/window_impl.cpp"
 		"platform/msw/code_translation.h" "platform/msw/code_translation.cpp"
 	)
+endif()
+
+if(D3D12)
+	target_compile_definitions(nyx PUBLIC NYX_GRAPHICS_D3D12)
+	target_link_libraries(nyx PUBLIC "d3d12.lib" "dxgi.lib" "d3dcompiler.lib" DirectXTK DirectX-Headers)
+	target_sources(nyx PRIVATE
+		"rendering/d3d12/renderer_impl.h" "rendering/d3d12/renderer_impl.cpp"
+	 "rendering/d3d12/exception.h")
 endif()
 
 # Compiler

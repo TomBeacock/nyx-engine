@@ -4,15 +4,17 @@
 #include "nyx/events.h"
 #include "nyx/log.h"
 #include "nyx/system/window.h"
-
-#include <iostream>
-#include <type_traits>
+#include "rendering/renderer.h"
 
 namespace Nyx {
-App::App() : window(std::make_unique<Window>())
+App::App()
+    : window(std::make_unique<Window>()), renderer(std::make_unique<Renderer>())
 {
     this->window->show();
+    this->renderer->init(*this->window);
 }
+
+App::~App() {}
 
 void App::execute()
 {
@@ -21,6 +23,7 @@ void App::execute()
         while (const auto event = this->window->poll_event()) {
             this->handle_event(event);
         }
+        this->renderer->render();
     }
 }
 

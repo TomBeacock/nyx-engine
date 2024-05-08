@@ -13,6 +13,11 @@ class Event {
 
     struct WindowClosing {};
 
+    struct WindowResized {
+        uint32_t width;
+        uint32_t height;
+    };
+
     struct KeyChanged {
         KeyCode key_code;
         ScanCode scan_code;
@@ -67,7 +72,7 @@ class Event {
     explicit operator bool() const;
 
   private:
-    std::variant<Empty, WindowClosing, KeyPressed, KeyReleased,
+    std::variant<Empty, WindowClosing, WindowResized, KeyPressed, KeyReleased,
         MouseButtonPressed, MouseButtonReleased, MouseWheelScrolled, MouseMoved>
         data;
 

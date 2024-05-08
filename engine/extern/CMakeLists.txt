@@ -5,3 +5,8 @@ if(NYX_BUILD_TESTS)
 	set(INSTALL_GTEST off CACHE BOOL "" FORCE)
 	add_subdirectory("googletest")
 endif()
+
+if(D3D12)
+	add_subdirectory("directXTK")
+	add_subdirectory("directX-headers")
+endif()

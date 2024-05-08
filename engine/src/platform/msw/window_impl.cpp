@@ -113,6 +113,14 @@ void WindowImpl::set_cursor_visibility(bool visible)
     SetCursor(visible ? this->last_cursor : nullptr);
 }
 
+Math::UInt2 WindowImpl::get_client_size()
+{
+    RECT rect{};
+    GetClientRect(handle, &rect);
+    return Math::UInt2(static_cast<unsigned int>(rect.right),
+        static_cast<unsigned int>(rect.bottom));
+}
+
 LRESULT WindowImpl::proc(HWND wnd, UINT msg, WPARAM w_param, LPARAM l_param)
 {
     WindowImpl *window = nullptr;
@@ -137,6 +145,15 @@ LRESULT WindowImpl::handle_message(UINT msg, WPARAM w_param, LPARAM l_param)
     switch (msg) {
         case WM_CLOSE: {
             push_event(Event::WindowClosing{});
+            return 0;
+        }
+        case WM_SIZE: {
+            UINT width = LOWORD(l_param);
+            UINT height = HIWORD(l_param);
+            push_event(Event::WindowResized{
+                static_cast<uint32_t>(width),
+                static_cast<uint32_t>(height),
+            });
             return 0;
         }
         case WM_LBUTTONDOWN: {

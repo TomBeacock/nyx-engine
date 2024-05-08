@@ -24,6 +24,9 @@ class WindowImpl : public Nyx::WindowImpl {
 
     virtual void set_title(const std::u8string &title) override;
     virtual void set_cursor_visibility(bool visible) override;
+    virtual Math::UInt2 get_client_size() override;
+
+    inline HWND get_hwnd() const { return this->handle; };
 
   public:
     static LRESULT proc(HWND wnd, UINT msg, WPARAM w_param, LPARAM l_param);

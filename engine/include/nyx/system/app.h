@@ -20,13 +20,17 @@
 
 namespace Nyx {
 class Window;
+class Renderer;
 class Event;
+}  // namespace Nyx
+
+namespace Nyx {
 
 class App {
   public:
     App(const App &) = delete;
     App(const App &&) = delete;
-    virtual ~App() = default;
+    virtual ~App();
 
     void execute();
 
@@ -44,6 +48,7 @@ class App {
   private:
     bool executing = false;
     std::unique_ptr<Window> window;
+    std::unique_ptr<Renderer> renderer;
 };
 }  // namespace Nyx
 
