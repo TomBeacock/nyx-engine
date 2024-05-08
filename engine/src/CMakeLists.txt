@@ -24,6 +24,8 @@ add_library(nyx STATIC
 	"../include/nyx/math/vector3.h" "../include/nyx/math/vector3.inl"
 	"../include/nyx/math/vector4.h" "../include/nyx/math/vector4.inl"
 
+	"../include/nyx/string/string_util.h" "string/string_util.cpp"
+
 	"rendering/renderer.h" "rendering/renderer.cpp"
 	"rendering/renderer_impl.h" "rendering/renderer_impl.cpp"
 )
@@ -54,7 +56,6 @@ if(WIN32)
 	target_compile_definitions(nyx PUBLIC NYX_PLATFORM_MSW)
 	target_sources(nyx PRIVATE
 		"system/msw/msw.h"
-		"system/msw/string_util.h" "system/msw/string_util.cpp"
 		"system/msw/window_impl.h" "system/msw/window_impl.cpp"
 		"system/msw/code_translation.h" "system/msw/code_translation.cpp"
 	)

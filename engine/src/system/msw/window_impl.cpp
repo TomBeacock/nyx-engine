@@ -2,7 +2,7 @@
 
 #include "code_translation.h"
 #include "nyx/events.h"
-#include "string_util.h"
+#include "nyx/string/string_util.h"
 
 #include <array>
 #include <iostream>
