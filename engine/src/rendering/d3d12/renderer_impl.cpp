@@ -3,7 +3,7 @@
 #include "exception.h"
 #include "nyx/math.h"
 #include "nyx/system/window.h"
-#include "platform/msw/window_impl.h"
+#include "system/msw/window_impl.h"
 #include "nyx/log.h"
 
 #include <d3dcompiler.h>

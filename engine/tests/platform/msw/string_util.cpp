@@ -1,4 +1,4 @@
-#include "platform/msw/string_util.cpp"
+#include "system/msw/string_util.cpp"
 
 #include <gtest/gtest.h>
 

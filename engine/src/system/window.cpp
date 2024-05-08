@@ -3,7 +3,7 @@
 #include "nyx/events.h"
 
 #ifdef NYX_PLATFORM_MSW
-#include <platform/msw/window_impl.h>
+#include "system/msw/window_impl.h"
 using WindowImplType = Nyx::MSW::WindowImpl;
 #else
 #error Unsupported platform
