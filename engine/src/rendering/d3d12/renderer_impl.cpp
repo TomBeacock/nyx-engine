@@ -5,6 +5,7 @@
 #include "nyx/system/window.h"
 #include "system/msw/window_impl.h"
 #include "nyx/log.h"
+#include "nyx/string/string_util.h"
 
 #include <d3dcompiler.h>
 
@@ -194,12 +195,12 @@ void RendererImpl::load_assets()
         ComPtr<ID3DBlob> error;
         if (FAILED(D3DCompileFromFile(path, nullptr, nullptr, "VSMain",
                 "vs_5_0", compile_flags, 0, &vertex_shader, &error))) {
-            NYX_ERROR("{}", static_cast<char *>(error->GetBufferPointer()));
+            NYX_ERROR(static_cast<char *>(error->GetBufferPointer()));
             throw std::exception();
         }
         if (FAILED(D3DCompileFromFile(path, nullptr, nullptr, "PSMain",
                 "ps_5_0", compile_flags, 0, &pixel_shader, &error))) {
-            NYX_ERROR("{}", static_cast<char *>(error->GetBufferPointer()));
+            NYX_ERROR(static_cast<char *>(error->GetBufferPointer()));
             throw std::exception();
         }
 #else
@@ -402,6 +403,15 @@ void get_hardware_adapter(IDXGIFactory4 *factory, IDXGIAdapter1 **adapter)
         if (SUCCEEDED(D3D12CreateDevice(found_adapter, D3D_FEATURE_LEVEL_11_0,
                 _uuidof(ID3D12Device), nullptr))) {
             *adapter = found_adapter;
+#ifdef NYX_LOGGING_ENABLED
+            DXGI_ADAPTER_DESC adapter_desc;
+            found_adapter->GetDesc(&adapter_desc);
+            NYX_LOG_F("GPU Description:\nName: {}\nVendor ID: {}\nVRAM: {}",
+                reinterpret_cast<const char *>(
+                    wstring_to_utf8(std::wstring(adapter_desc.Description))
+                        .data()),
+                adapter_desc.VendorId, adapter_desc.DedicatedVideoMemory);
+#endif
             return;
         }
         found_adapter->Release();

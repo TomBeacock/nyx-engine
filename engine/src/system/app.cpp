@@ -34,25 +34,25 @@ void App::handle_event(const Event &event)
         return;
     }
     if (const auto data = event.get_if<Nyx::Event::KeyPressed>()) {
-        NYX_LOG("{}", data->key_code);
+        NYX_LOG_F("{}", data->key_code);
         return;
     }
     if (const auto data = event.get_if<Nyx::Event::KeyReleased>()) {
         return;
     }
     if (const auto data = event.get_if<Nyx::Event::MouseButtonPressed>()) {
-        NYX_LOG("{} {}", data->mouse_button, data->position);
+        NYX_LOG_F("{} {}", data->mouse_button, data->position);
         return;
     }
     if (const auto data = event.get_if<Nyx::Event::MouseButtonReleased>()) {
         return;
     }
     if (const auto data = event.get_if<Nyx::Event::MouseWheelScrolled>()) {
-        NYX_LOG("{}", data->delta);
+        NYX_LOG_F("{}", data->delta);
         return;
     }
     if (const auto data = event.get_if<Nyx::Event::MouseMoved>()) {
-        NYX_LOG("{} {}", data->position, data->delta);
+        NYX_LOG_F("{} {}", data->position, data->delta);
         return;
     }
 }
