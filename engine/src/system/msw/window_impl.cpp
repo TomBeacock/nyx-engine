@@ -247,6 +247,14 @@ LRESULT WindowImpl::handle_message(UINT msg, WPARAM w_param, LPARAM l_param)
             }
             break;
         }
+        case WM_PAINT: {
+            {
+                PAINTSTRUCT ps;
+                std::ignore = BeginPaint(this->handle, &ps);
+                EndPaint(this->handle, &ps);
+            }
+            break;
+        }
     }
     return DefWindowProc(this->handle, msg, w_param, l_param);
 }
