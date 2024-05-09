@@ -33,10 +33,11 @@
               << std::format(fmt __VA_OPT__(, ) __VA_ARGS__) << "\x1B[0m"      \
               << std::endl
 #define NYX_ERROR_F(fmt, ...)                                                  \
-    std::cout << "\x1B[31m" << std::format(fmt __VA_OPT__(, ) __VA_ARGS__)     \
+    std::cout << "\x1B[31m"                                                    \
               << std::format("{} ({}): Error: ",                               \
                      __FILE__ + SOURCE_PATH_LENGTH, __LINE__)                  \
-              << "\x1B[0m" << std::endl
+              << std::format(fmt __VA_OPT__(, ) __VA_ARGS__) << "\x1B[0m"      \
+              << std::endl
 #else
 #define NYX_LOG(...)
 #define NYX_WARN(...)
