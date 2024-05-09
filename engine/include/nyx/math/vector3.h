@@ -28,88 +28,81 @@ struct Vector<3, T> {
     const static Vector<3, T> forward;
     const static Vector<3, T> back;
 
-    Vector() = default;
+    constexpr Vector() = default;
     template <typename TX, typename TY, typename TZ>
-    Vector(TX x, TY y, TZ z);
+    constexpr Vector(TX x, TY y, TZ z);
     template <typename U>
-    explicit Vector(U scalar);
+    constexpr explicit Vector(U scalar);
     template <typename U>
-    Vector(const Vector<2, U> &v);
+    constexpr Vector(const Vector<2, U> &v);
     template <typename U>
-    Vector(const Vector<3, U> &v);
+    constexpr Vector(const Vector<3, U> &v);
     template <typename U>
-    Vector(const Vector<4, U> &v);
+    constexpr Vector(const Vector<4, U> &v);
 
     template <typename U>
-    Vector<3, T> &operator=(U scalar);
+    constexpr Vector<3, T> &operator=(U scalar);
     template <typename U>
-    Vector<3, T> &operator=(const Vector<3, U> &v);
+    constexpr Vector<3, T> &operator=(const Vector<3, U> &v);
     template <typename U>
-    Vector<3, T> &operator+=(U scalar);
+    constexpr Vector<3, T> &operator+=(U scalar);
     template <typename U>
-    Vector<3, T> &operator+=(const Vector<3, U> &v);
+    constexpr Vector<3, T> &operator+=(const Vector<3, U> &v);
     template <typename U>
-    Vector<3, T> &operator-=(U scalar);
+    constexpr Vector<3, T> &operator-=(U scalar);
     template <typename U>
-    Vector<3, T> &operator-=(const Vector<3, U> &v);
+    constexpr Vector<3, T> &operator-=(const Vector<3, U> &v);
     template <typename U>
-    Vector<3, T> &operator*=(U scalar);
+    constexpr Vector<3, T> &operator*=(U scalar);
     template <typename U>
-    Vector<3, T> &operator*=(const Vector<3, U> &v);
+    constexpr Vector<3, T> &operator*=(const Vector<3, U> &v);
     template <typename U>
-    Vector<3, T> &operator/=(U scalar);
+    constexpr Vector<3, T> &operator/=(U scalar);
     template <typename U>
-    Vector<3, T> &operator/=(const Vector<3, U> &v);
+    constexpr Vector<3, T> &operator/=(const Vector<3, U> &v);
 
-    T &operator[](size_t i);
-    const T &operator[](size_t i) const;
+    constexpr T &operator[](size_t i);
+    constexpr const T &operator[](size_t i) const;
 };
 
 template <typename T>
-Vector<3, T> operator+(const Vector<3, T> &v);
+constexpr Vector<3, T> operator+(const Vector<3, T> &v);
 template <typename T>
-Vector<3, T> operator-(const Vector<3, T> &v);
+constexpr Vector<3, T> operator-(const Vector<3, T> &v);
 
 template <typename T>
-Vector<3, T> operator+(const Vector<3, T> &v, T scalar);
+constexpr Vector<3, T> operator+(const Vector<3, T> &v, T scalar);
 template <typename T>
-Vector<3, T> operator+(T scalar, const Vector<3, T> &v);
+constexpr Vector<3, T> operator+(T scalar, const Vector<3, T> &v);
 template <typename T>
-Vector<3, T> operator+(const Vector<3, T> &v1, const Vector<3, T> &v2);
+constexpr Vector<3, T> operator+(
+    const Vector<3, T> &v1, const Vector<3, T> &v2);
 template <typename T>
-Vector<3, T> operator-(const Vector<3, T> &v, T scalar);
+constexpr Vector<3, T> operator-(const Vector<3, T> &v, T scalar);
 template <typename T>
-Vector<3, T> operator-(T scalar, const Vector<3, T> &v);
+constexpr Vector<3, T> operator-(T scalar, const Vector<3, T> &v);
 template <typename T>
-Vector<3, T> operator-(const Vector<3, T> &v1, const Vector<3, T> &v2);
+constexpr Vector<3, T> operator-(
+    const Vector<3, T> &v1, const Vector<3, T> &v2);
 template <typename T>
-Vector<3, T> operator*(const Vector<3, T> &v, T scalar);
+constexpr Vector<3, T> operator*(const Vector<3, T> &v, T scalar);
 template <typename T>
-Vector<3, T> operator*(T scalar, const Vector<3, T> &v);
+constexpr Vector<3, T> operator*(T scalar, const Vector<3, T> &v);
 template <typename T>
-Vector<3, T> operator*(const Vector<3, T> &v1, const Vector<3, T> &v2);
+constexpr Vector<3, T> operator*(
+    const Vector<3, T> &v1, const Vector<3, T> &v2);
 template <typename T>
-Vector<3, T> operator/(const Vector<3, T> &v, T scalar);
+constexpr Vector<3, T> operator/(const Vector<3, T> &v, T scalar);
 template <typename T>
-Vector<3, T> operator/(T scalar, const Vector<3, T> &v);
+constexpr Vector<3, T> operator/(T scalar, const Vector<3, T> &v);
 template <typename T>
-Vector<3, T> operator/(const Vector<3, T> &v1, const Vector<3, T> &v2);
+constexpr Vector<3, T> operator/(
+    const Vector<3, T> &v1, const Vector<3, T> &v2);
 
 template <typename T>
-bool operator==(const Vector<3, T> &v1, const Vector<3, T> &v2);
+constexpr bool operator==(const Vector<3, T> &v1, const Vector<3, T> &v2);
 template <typename T>
-bool operator!=(const Vector<3, T> &v1, const Vector<3, T> &v2);
-
-template <typename T>
-struct std::formatter<Vector<3, T>> {
-    constexpr auto parse(std::format_parse_context &ctx) { return ctx.begin(); }
-
-    auto format(
-        const Nyx::Math::Vector<3, T> &v, std::format_context &ctx) const
-    {
-        return std::format_to(ctx.out(), "[{},{},{}]", v.x, v.y, v.z);
-    }
-};
+constexpr bool operator!=(const Vector<3, T> &v1, const Vector<3, T> &v2);
 }  // namespace Nyx::Math
 
 #include "vector3.inl"

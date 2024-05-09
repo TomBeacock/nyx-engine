@@ -5,7 +5,7 @@
 
 namespace Nyx::Math {
 template <typename T>
-Matrix<4, 4, T> transpose(const Matrix<4, 4, T> &m)
+constexpr Matrix<4, 4, T> transpose(const Matrix<4, 4, T> &m)
 {
     return Matrix<4, 4, T>(Vector<4, T>(m[0][0], m[1][0], m[2][0], m[3][0]),
         Vector<4, T>(m[0][1], m[1][1], m[2][1], m[3][1]),
@@ -14,7 +14,7 @@ Matrix<4, 4, T> transpose(const Matrix<4, 4, T> &m)
 }
 
 template <typename T>
-T determinant(const Matrix<4, 4, T> &m)
+constexpr T determinant(const Matrix<4, 4, T> &m)
 {
     T sub_factor0 = m[2][2] * m[3][3] - m[3][2] * m[2][3];
     T sub_factor1 = m[2][1] * m[3][3] - m[3][1] * m[2][3];
@@ -37,7 +37,7 @@ T determinant(const Matrix<4, 4, T> &m)
 }
 
 template <size_t R, size_t C, typename T>
-Matrix<R, C, T> inverse(const Matrix<R, C, T> &m)
+constexpr Matrix<R, C, T> inverse(const Matrix<R, C, T> &m)
 {
     T coef00 = m[2][2] * m[3][3] - m[3][2] * m[2][3];
     T coef02 = m[1][2] * m[3][3] - m[3][2] * m[1][3];

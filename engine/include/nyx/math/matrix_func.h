@@ -18,7 +18,7 @@ namespace Nyx::Math {
  * @return The transposed matrix.
  */
 template <size_t R, size_t C, typename T>
-Matrix<C, R, T> transpose(const Matrix<R, C, T> &m);
+constexpr Matrix<C, R, T> transpose(const Matrix<R, C, T> &m);
 
 /**
  * @brief Calculates the determinant of a matrix.
@@ -29,7 +29,7 @@ Matrix<C, R, T> transpose(const Matrix<R, C, T> &m);
  * @return The determinant.
  */
 template <size_t R, size_t C, typename T>
-T determinant(const Matrix<R, C, T> &m);
+constexpr T determinant(const Matrix<R, C, T> &m);
 
 /**
  * @brief Calculates the inversion of a matrix.
@@ -40,7 +40,7 @@ T determinant(const Matrix<R, C, T> &m);
  * @return The inverted matrix.
  */
 template <size_t R, size_t C, typename T>
-Matrix<R, C, T> inverse(const Matrix<R, C, T> &m);
+constexpr Matrix<R, C, T> inverse(const Matrix<R, C, T> &m);
 
 template <size_t R, size_t C, typename T>
 inline std::ostream &operator<<(std::ostream &os, const Matrix<R, C, T> &m);

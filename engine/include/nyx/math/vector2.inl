@@ -25,36 +25,37 @@ const Vector<2, T> Vector<2, T>::down =
 
 template <typename T>
 template <typename TX, typename TY>
-Vector<2, T>::Vector(TX x, TY y) : x(static_cast<T>(x)), y(static_cast<T>(y))
+constexpr Vector<2, T>::Vector(TX x, TY y)
+    : x(static_cast<T>(x)), y(static_cast<T>(y))
 {}
 
 template <typename T>
 template <typename U>
-Vector<2, T>::Vector(U scalar)
+constexpr Vector<2, T>::Vector(U scalar)
     : x(static_cast<T>(scalar)), y(static_cast<T>(scalar))
 {}
 
 template <typename T>
 template <typename U>
-Vector<2, T>::Vector(const Vector<2, U> &v)
+constexpr Vector<2, T>::Vector(const Vector<2, U> &v)
     : x(static_cast<T>(v.x)), y(static_cast<T>(v.y))
 {}
 
 template <typename T>
 template <typename U>
-Vector<2, T>::Vector(const Vector<3, U> &v)
+constexpr Vector<2, T>::Vector(const Vector<3, U> &v)
     : x(static_cast<T>(v.x)), y(static_cast<T>(v.y))
 {}
 
 template <typename T>
 template <typename U>
-Vector<2, T>::Vector(const Vector<4, U> &v)
+constexpr Vector<2, T>::Vector(const Vector<4, U> &v)
     : x(static_cast<T>(v.x)), y(static_cast<T>(v.y))
 {}
 
 template <typename T>
 template <typename U>
-inline Vector<2, T> &Vector<2, T>::operator=(U scalar)
+constexpr Vector<2, T> &Vector<2, T>::operator=(U scalar)
 {
     this->x = static_cast<T>(scalar);
     this->y = static_cast<T>(scalar);
@@ -63,7 +64,7 @@ inline Vector<2, T> &Vector<2, T>::operator=(U scalar)
 
 template <typename T>
 template <typename U>
-inline Vector<2, T> &Vector<2, T>::operator=(const Vector<2, U> &v)
+constexpr Vector<2, T> &Vector<2, T>::operator=(const Vector<2, U> &v)
 {
     this->x = static_cast<T>(v.x);
     this->y = static_cast<T>(v.y);
@@ -72,7 +73,7 @@ inline Vector<2, T> &Vector<2, T>::operator=(const Vector<2, U> &v)
 
 template <typename T>
 template <typename U>
-inline Vector<2, T> &Vector<2, T>::operator+=(U scalar)
+constexpr Vector<2, T> &Vector<2, T>::operator+=(U scalar)
 {
     this->x += static_cast<T>(scalar);
     this->y += static_cast<T>(scalar);
@@ -81,7 +82,7 @@ inline Vector<2, T> &Vector<2, T>::operator+=(U scalar)
 
 template <typename T>
 template <typename U>
-inline Vector<2, T> &Vector<2, T>::operator+=(const Vector<2, U> &v)
+constexpr Vector<2, T> &Vector<2, T>::operator+=(const Vector<2, U> &v)
 {
     this->x += static_cast<T>(v.x);
     this->y += static_cast<T>(v.y);
@@ -90,7 +91,7 @@ inline Vector<2, T> &Vector<2, T>::operator+=(const Vector<2, U> &v)
 
 template <typename T>
 template <typename U>
-inline Vector<2, T> &Vector<2, T>::operator-=(U scalar)
+constexpr Vector<2, T> &Vector<2, T>::operator-=(U scalar)
 {
     this->x -= static_cast<T>(scalar);
     this->y -= static_cast<T>(scalar);
@@ -99,7 +100,7 @@ inline Vector<2, T> &Vector<2, T>::operator-=(U scalar)
 
 template <typename T>
 template <typename U>
-inline Vector<2, T> &Vector<2, T>::operator-=(const Vector<2, U> &v)
+constexpr Vector<2, T> &Vector<2, T>::operator-=(const Vector<2, U> &v)
 {
     this->x -= static_cast<T>(v.x);
     this->y -= static_cast<T>(v.y);
@@ -108,7 +109,7 @@ inline Vector<2, T> &Vector<2, T>::operator-=(const Vector<2, U> &v)
 
 template <typename T>
 template <typename U>
-inline Vector<2, T> &Vector<2, T>::operator*=(U scalar)
+constexpr Vector<2, T> &Vector<2, T>::operator*=(U scalar)
 {
     this->x *= static_cast<T>(scalar);
     this->y *= static_cast<T>(scalar);
@@ -117,7 +118,7 @@ inline Vector<2, T> &Vector<2, T>::operator*=(U scalar)
 
 template <typename T>
 template <typename U>
-inline Vector<2, T> &Vector<2, T>::operator*=(const Vector<2, U> &v)
+constexpr Vector<2, T> &Vector<2, T>::operator*=(const Vector<2, U> &v)
 {
     this->x *= static_cast<T>(v.x);
     this->y *= static_cast<T>(v.y);
@@ -126,7 +127,7 @@ inline Vector<2, T> &Vector<2, T>::operator*=(const Vector<2, U> &v)
 
 template <typename T>
 template <typename U>
-inline Vector<2, T> &Vector<2, T>::operator/=(U scalar)
+constexpr Vector<2, T> &Vector<2, T>::operator/=(U scalar)
 {
     this->x /= static_cast<T>(scalar);
     this->y /= static_cast<T>(scalar);
@@ -135,7 +136,7 @@ inline Vector<2, T> &Vector<2, T>::operator/=(U scalar)
 
 template <typename T>
 template <typename U>
-inline Vector<2, T> &Vector<2, T>::operator/=(const Vector<2, U> &v)
+constexpr Vector<2, T> &Vector<2, T>::operator/=(const Vector<2, U> &v)
 {
     this->x /= static_cast<T>(v.x);
     this->y /= static_cast<T>(v.y);
@@ -143,7 +144,7 @@ inline Vector<2, T> &Vector<2, T>::operator/=(const Vector<2, U> &v)
 }
 
 template <typename T>
-inline T &Vector<2, T>::operator[](size_t i)
+constexpr T &Vector<2, T>::operator[](size_t i)
 {
     assert(i >= 0 && i < 2);
     switch (i) {
@@ -153,7 +154,7 @@ inline T &Vector<2, T>::operator[](size_t i)
     }
 }
 template <typename T>
-inline const T &Vector<2, T>::operator[](size_t i) const
+constexpr const T &Vector<2, T>::operator[](size_t i) const
 {
     assert(i >= 0 && i < 2);
     switch (i) {
@@ -164,95 +165,96 @@ inline const T &Vector<2, T>::operator[](size_t i) const
 }
 
 template <typename T>
-inline Vector<2, T> operator+(const Vector<2, T> &v)
+constexpr Vector<2, T> operator+(const Vector<2, T> &v)
 {
     return v;
 }
 
 template <typename T>
-inline Vector<2, T> operator-(const Vector<2, T> &v)
+constexpr Vector<2, T> operator-(const Vector<2, T> &v)
 {
     return Vector<2, T>(-v.x, -v.y);
 }
+
 template <typename T>
-Vector<2, T> operator+(const Vector<2, T> &v, T scalar)
+constexpr Vector<2, T> operator+(const Vector<2, T> &v, T scalar)
 {
     return Vector<2, T>(v.x + scalar, v.y + scalar);
 }
 
 template <typename T>
-Vector<2, T> operator+(T scalar, const Vector<2, T> &v)
+constexpr Vector<2, T> operator+(T scalar, const Vector<2, T> &v)
 {
     return Vector<2, T>(scalar + v.x, scalar + v.y);
 }
 
 template <typename T>
-Vector<2, T> operator+(const Vector<2, T> &v1, const Vector<2, T> &v2)
+constexpr Vector<2, T> operator+(const Vector<2, T> &v1, const Vector<2, T> &v2)
 {
     return Vector<2, T>(v1.x + v2.x, v1.y + v2.y);
 }
 
 template <typename T>
-Vector<2, T> operator-(const Vector<2, T> &v, T scalar)
+constexpr Vector<2, T> operator-(const Vector<2, T> &v, T scalar)
 {
     return Vector<2, T>(v.x - scalar, v.y - scalar);
 }
 
 template <typename T>
-Vector<2, T> operator-(T scalar, const Vector<2, T> &v)
+constexpr Vector<2, T> operator-(T scalar, const Vector<2, T> &v)
 {
     return Vector<2, T>(scalar - v.x, scalar - v.y);
 }
 
 template <typename T>
-Vector<2, T> operator-(const Vector<2, T> &v1, const Vector<2, T> &v2)
+constexpr Vector<2, T> operator-(const Vector<2, T> &v1, const Vector<2, T> &v2)
 {
     return Vector<2, T>(v1.x - v2.x, v1.y - v2.y);
 }
 
 template <typename T>
-Vector<2, T> operator*(const Vector<2, T> &v, T scalar)
+constexpr Vector<2, T> operator*(const Vector<2, T> &v, T scalar)
 {
     return Vector<2, T>(v.x * scalar, v.y * scalar);
 }
 
 template <typename T>
-Vector<2, T> operator*(T scalar, const Vector<2, T> &v)
+constexpr Vector<2, T> operator*(T scalar, const Vector<2, T> &v)
 {
     return Vector<2, T>(scalar * v.x, scalar * v.y);
 }
 
 template <typename T>
-Vector<2, T> operator*(const Vector<2, T> &v1, const Vector<2, T> &v2)
+constexpr Vector<2, T> operator*(const Vector<2, T> &v1, const Vector<2, T> &v2)
 {
     return Vector<2, T>(v1.x * v2.x, v1.y * v2.y);
 }
 
 template <typename T>
-Vector<2, T> operator/(const Vector<2, T> &v, T scalar)
+constexpr Vector<2, T> operator/(const Vector<2, T> &v, T scalar)
 {
     return Vector<2, T>(v.x / scalar, v.y / scalar);
 }
 
 template <typename T>
-Vector<2, T> operator/(T scalar, const Vector<2, T> &v)
+constexpr Vector<2, T> operator/(T scalar, const Vector<2, T> &v)
 {
     return Vector<2, T>(scalar / v.x, scalar / v.y);
 }
 
 template <typename T>
-Vector<2, T> operator/(const Vector<2, T> &v1, const Vector<2, T> &v2)
+constexpr Vector<2, T> operator/(const Vector<2, T> &v1, const Vector<2, T> &v2)
 {
     return Vector<2, T>(v1.x / v2.x, v1.y / v2.y);
 }
 
 template <typename T>
-bool operator==(const Vector<2, T> &v1, const Vector<2, T> &v2)
+constexpr bool operator==(const Vector<2, T> &v1, const Vector<2, T> &v2)
 {
     return v1.x == v2.x && v1.y == v2.y;
 }
 template <typename T>
-bool operator!=(const Vector<2, T> &v1, const Vector<2, T> &v2)
+constexpr bool operator!=(const Vector<2, T> &v1, const Vector<2, T> &v2)
 {
     return !(v1 == v2);
 }

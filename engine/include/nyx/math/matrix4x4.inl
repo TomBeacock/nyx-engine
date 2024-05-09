@@ -16,13 +16,13 @@ const Matrix<4, 4, T> Matrix<4, 4, T>::identity =
 
 template <typename T>
 template <typename U>
-inline Matrix<4, 4, T>::Matrix(U scalar)
+constexpr Matrix<4, 4, T>::Matrix(U scalar)
     : cols{Col(scalar), Col(scalar), Col(scalar), Col(scalar)}
 {}
 
 template <typename T>
 template <typename U>
-inline Matrix<4, 4, T>::Matrix(const Matrix<4, 4, U> &m)
+constexpr Matrix<4, 4, T>::Matrix(const Matrix<4, 4, U> &m)
     : cols{m[0], m[1], m[2], m[3]}
 {}
 
@@ -31,7 +31,7 @@ template <typename X0, typename Y0, typename Z0, typename W0, typename X1,
     typename Y1, typename Z1, typename W1, typename X2, typename Y2,
     typename Z2, typename W2, typename X3, typename Y3, typename Z3,
     typename W3>
-inline Nyx::Math::Matrix<4, 4, T>::Matrix(X0 x0, Y0 y0, Z0 z0, W0 w0, X1 x1,
+constexpr Nyx::Math::Matrix<4, 4, T>::Matrix(X0 x0, Y0 y0, Z0 z0, W0 w0, X1 x1,
     Y1 y1, Z1 z1, W1 w1, X2 x2, Y2 y2, Z2 z2, W2 w2, X3 x3, Y3 y3, Z3 z3, W3 w3)
     : cols{
           Col(x0, y0, z0, w0),
@@ -43,7 +43,7 @@ inline Nyx::Math::Matrix<4, 4, T>::Matrix(X0 x0, Y0 y0, Z0 z0, W0 w0, X1 x1,
 
 template <typename T>
 template <typename V0, typename V1, typename V2, typename V3>
-inline Matrix<4, 4, T>::Matrix(
+constexpr Matrix<4, 4, T>::Matrix(
     Vector<4, V0> v0, Vector<4, V1> v1, Vector<4, V2> v2, Vector<4, V3> v3)
     : cols{v0, v1, v2, v3}
 {}
@@ -289,13 +289,13 @@ constexpr Matrix<4, 4, T> operator/(
 }
 
 template <typename T>
-bool operator==(const Matrix<4, 4, T> &m1, const Matrix<4, 4, T> &m2)
+constexpr bool operator==(const Matrix<4, 4, T> &m1, const Matrix<4, 4, T> &m2)
 {
     return m1[0] == m2[0] && m1[1] == m2[1] && m1[2] == m2[2] && m1[3] == m2[3];
 }
 
 template <typename T>
-bool operator!=(const Matrix<4, 4, T> &m1, const Matrix<4, 4, T> &m2)
+constexpr bool operator!=(const Matrix<4, 4, T> &m1, const Matrix<4, 4, T> &m2)
 {
     return m1[0] != m2[0] || m1[1] != m2[1] || m1[2] != m2[2] || m1[3] != m2[3];
 }
