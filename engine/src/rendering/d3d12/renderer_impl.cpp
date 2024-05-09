@@ -29,8 +29,14 @@ RendererImpl::RendererImpl()
       vertex_buffer_view(),
       frame_index(),
       fence_event(),
-      fence_value()
+      fence_values()
 {}
+
+RendererImpl::~RendererImpl()
+{
+    wait_for_gpu();
+    CloseHandle(this->fence_event);
+}
 
 void RendererImpl::init(const Window &window)
 {
@@ -52,17 +58,18 @@ void RendererImpl::init(const Window &window)
 void RendererImpl::render()
 {
     record_command_list();
-    ID3D12CommandList *command_lists[] = {this->command_list.Get()};
+    std::array<ID3D12CommandList *, 1> command_lists = {
+        this->command_list.Get()};
     this->command_queue->ExecuteCommandLists(
-        _countof(command_lists), command_lists);
+        command_lists.size(), command_lists.data());
     DX::ThrowIfFailed(this->swap_chain->Present(1, 0));
-    wait_for_prev_frame();
+    move_to_next_frame();
 }
 
 void RendererImpl::load_pipeline(uint32_t width, uint32_t height, HWND handle)
 {
     // Enable debug layer
-#ifdef NYX_LOGGING_ENABLEDX
+#ifdef NYX_LOGGING_ENABLED
     {
         ComPtr<ID3D12Debug> debug_controller;
         if (SUCCEEDED(
@@ -149,20 +156,17 @@ void RendererImpl::load_pipeline(uint32_t width, uint32_t height, HWND handle)
     {
         CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_heap_handle(
             this->rtv_heap->GetCPUDescriptorHandleForHeapStart());
-        for (UINT n = 0; n < this->frame_count; n++) {
+        for (UINT i = 0; i < this->frame_count; i++) {
             DX::ThrowIfFailed(this->swap_chain->GetBuffer(
-                n, IID_PPV_ARGS(&this->render_targets[n])));
+                i, IID_PPV_ARGS(&this->render_targets[i])));
             this->device->CreateRenderTargetView(
-                this->render_targets[n].Get(), nullptr, rtv_heap_handle);
+                this->render_targets[i].Get(), nullptr, rtv_heap_handle);
             rtv_heap_handle.Offset(1, this->rtv_desc_size);
-        }
-    }
 
-    // Create command allocator
-    {
-        DX::ThrowIfFailed(
-            this->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
-                IID_PPV_ARGS(&this->command_allocator)));
+            DX::ThrowIfFailed(this->device->CreateCommandAllocator(
+                D3D12_COMMAND_LIST_TYPE_DIRECT,
+                IID_PPV_ARGS(&this->command_allocators[i])));
+        }
     }
 }
 
@@ -275,8 +279,10 @@ void RendererImpl::load_assets()
 
     // Create command list
     {
+        ComPtr<ID3D12CommandAllocator> command_allocator =
+            this->command_allocators[this->frame_index];
         DX::ThrowIfFailed(this->device->CreateCommandList(0,
-            D3D12_COMMAND_LIST_TYPE_DIRECT, this->command_allocator.Get(),
+            D3D12_COMMAND_LIST_TYPE_DIRECT, command_allocator.Get(),
             this->pipeline_state.Get(), IID_PPV_ARGS(&this->command_list)));
         DX::ThrowIfFailed(this->command_list->Close());
     }
@@ -317,10 +323,10 @@ void RendererImpl::load_assets()
 
     // Create synchronization objects
     {
+        UINT64 &fence_value = this->fence_values[this->frame_index];
         DX::ThrowIfFailed(this->device->CreateFence(
-            0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&this->fence)));
-
-        this->fence_value = 1;
+            fence_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&this->fence)));
+        fence_value++;
 
         // Create an event handle
         this->fence_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
@@ -329,15 +335,16 @@ void RendererImpl::load_assets()
         }
 
         // Wait for the command list to execute
-        wait_for_prev_frame();
+        wait_for_gpu();
     }
 }
 
 void RendererImpl::record_command_list()
 {
-    DX::ThrowIfFailed(this->command_allocator->Reset());
+    DX::ThrowIfFailed(this->command_allocators[this->frame_index]->Reset());
     DX::ThrowIfFailed(this->command_list->Reset(
-        this->command_allocator.Get(), this->pipeline_state.Get()));
+        this->command_allocators[this->frame_index].Get(),
+        this->pipeline_state.Get()));
 
     // Set necessary state.
     this->command_list->SetGraphicsRootSignature(this->root_signature.Get());
@@ -373,20 +380,32 @@ void RendererImpl::record_command_list()
     DX::ThrowIfFailed(this->command_list->Close());
 }
 
-void RendererImpl::wait_for_prev_frame()
+void RendererImpl::wait_for_gpu()
 {
-    const UINT64 fence = this->fence_value;
+    const UINT64 fence = this->fence_values[this->frame_index];
     DX::ThrowIfFailed(this->command_queue->Signal(this->fence.Get(), fence));
-    this->fence_value++;
 
-    // Wait until the previous frame is finished
-    if (this->fence->GetCompletedValue() < fence) {
-        DX::ThrowIfFailed(
-            this->fence->SetEventOnCompletion(fence, this->fence_event));
-        WaitForSingleObject(this->fence_event, INFINITE);
-    }
+    DX::ThrowIfFailed(this->fence->SetEventOnCompletion(
+        this->fence_values[this->frame_index], this->fence_event));
+    WaitForSingleObjectEx(this->fence_event, INFINITE, FALSE);
+
+    this->fence_values[this->frame_index]++;
+}
+
+void RendererImpl::move_to_next_frame()
+{
+    const UINT64 fence = this->fence_values[this->frame_index];
+    DX::ThrowIfFailed(this->command_queue->Signal(this->fence.Get(), fence));
 
     this->frame_index = this->swap_chain->GetCurrentBackBufferIndex();
+
+    if (this->fence->GetCompletedValue() <
+        this->fence_values[this->frame_index]) {
+        DX::ThrowIfFailed(this->fence->SetEventOnCompletion(
+            this->fence_values[this->frame_index], this->fence_event));
+        WaitForSingleObjectEx(this->fence_event, INFINITE, FALSE);
+    }
+    this->fence_values[this->frame_index] = fence + 1;
 }
 
 void get_hardware_adapter(IDXGIFactory4 *factory, IDXGIAdapter1 **adapter)

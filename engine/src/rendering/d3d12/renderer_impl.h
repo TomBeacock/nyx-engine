@@ -15,6 +15,7 @@ namespace Nyx::D3D12 {
 class RendererImpl : public Nyx::RendererImpl {
   public:
     RendererImpl();
+    ~RendererImpl();
 
     virtual void init(const Window &window) override;
     virtual void render() override;
@@ -23,7 +24,8 @@ class RendererImpl : public Nyx::RendererImpl {
     void load_pipeline(uint32_t width, uint32_t height, HWND handle);
     void load_assets();
     void record_command_list();
-    void wait_for_prev_frame();
+    void wait_for_gpu();
+    void move_to_next_frame();
 
   private:
     static const UINT frame_count = 2;
@@ -34,7 +36,8 @@ class RendererImpl : public Nyx::RendererImpl {
     Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain;
     Microsoft::WRL::ComPtr<ID3D12Device> device;
     Microsoft::WRL::ComPtr<ID3D12Resource> render_targets[frame_count];
-    Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator;
+    Microsoft::WRL::ComPtr<ID3D12CommandAllocator>
+        command_allocators[frame_count];
     Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue;
     Microsoft::WRL::ComPtr<ID3D12RootSignature> root_signature;
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtv_heap;
@@ -49,6 +52,6 @@ class RendererImpl : public Nyx::RendererImpl {
     UINT frame_index;
     HANDLE fence_event;
     Microsoft::WRL::ComPtr<ID3D12Fence> fence;
-    UINT64 fence_value;
+    UINT64 fence_values[frame_count];
 };
 }  // namespace Nyx::D3D12
