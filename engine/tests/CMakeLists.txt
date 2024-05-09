@@ -1,7 +1,7 @@
 project(tests)
 
 add_executable(tests
-"platform/msw/string_util.cpp"
+"string/string_util.cpp"
 "math/vector_func.cpp" "math/vector2.cpp" "math/vector3.cpp" "math/vector4.cpp"
 )
 target_link_libraries(tests PRIVATE nyx GTest::gtest_main)
