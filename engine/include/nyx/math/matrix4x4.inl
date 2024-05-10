@@ -1,9 +1,6 @@
 #include "matrix4x4.h"
-
 #include "nyx/assert.h"
 #include "nyx/math/vector_func.h"
-
-#include <cmath>
 
 namespace Nyx::Math {
 template <typename T>
@@ -31,8 +28,9 @@ template <typename X0, typename Y0, typename Z0, typename W0, typename X1,
     typename Y1, typename Z1, typename W1, typename X2, typename Y2,
     typename Z2, typename W2, typename X3, typename Y3, typename Z3,
     typename W3>
-constexpr Nyx::Math::MatrixT<4, 4, T>::MatrixT(X0 x0, Y0 y0, Z0 z0, W0 w0, X1 x1,
-    Y1 y1, Z1 z1, W1 w1, X2 x2, Y2 y2, Z2 z2, W2 w2, X3 x3, Y3 y3, Z3 z3, W3 w3)
+constexpr Nyx::Math::MatrixT<4, 4, T>::MatrixT(X0 x0, Y0 y0, Z0 z0, W0 w0,
+    X1 x1, Y1 y1, Z1 z1, W1 w1, X2 x2, Y2 y2, Z2 z2, W2 w2, X3 x3, Y3 y3, Z3 z3,
+    W3 w3)
     : cols{
           Col(x0, y0, z0, w0),
           Col(x1, y1, z1, w1),
@@ -84,7 +82,8 @@ constexpr MatrixT<4, 4, T> &MatrixT<4, 4, T>::operator+=(U scalar)
 
 template <typename T>
 template <typename U>
-constexpr MatrixT<4, 4, T> &MatrixT<4, 4, T>::operator+=(const MatrixT<4, 4, U> &m)
+constexpr MatrixT<4, 4, T> &MatrixT<4, 4, T>::operator+=(
+    const MatrixT<4, 4, U> &m)
 {
     this->cols[0] += m[0];
     this->cols[1] += m[1];
@@ -106,7 +105,8 @@ constexpr MatrixT<4, 4, T> &MatrixT<4, 4, T>::operator-=(U scalar)
 
 template <typename T>
 template <typename U>
-constexpr MatrixT<4, 4, T> &MatrixT<4, 4, T>::operator-=(const MatrixT<4, 4, U> &m)
+constexpr MatrixT<4, 4, T> &MatrixT<4, 4, T>::operator-=(
+    const MatrixT<4, 4, U> &m)
 {
     this->cols[0] -= m[0];
     this->cols[1] -= m[1];
@@ -128,7 +128,8 @@ constexpr MatrixT<4, 4, T> &MatrixT<4, 4, T>::operator*=(U scalar)
 
 template <typename T>
 template <typename U>
-constexpr MatrixT<4, 4, T> &MatrixT<4, 4, T>::operator*=(const MatrixT<4, 4, U> &m)
+constexpr MatrixT<4, 4, T> &MatrixT<4, 4, T>::operator*=(
+    const MatrixT<4, 4, U> &m)
 {
     return (*this = *this * m);
 }
@@ -146,7 +147,8 @@ constexpr MatrixT<4, 4, T> &MatrixT<4, 4, T>::operator/=(U scalar)
 
 template <typename T>
 template <typename U>
-constexpr MatrixT<4, 4, T> &MatrixT<4, 4, T>::operator/=(const MatrixT<4, 4, U> &m)
+constexpr MatrixT<4, 4, T> &MatrixT<4, 4, T>::operator/=(
+    const MatrixT<4, 4, U> &m)
 {
     return *this *= inverse(m);
 }
@@ -289,13 +291,15 @@ constexpr MatrixT<4, 4, T> operator/(
 }
 
 template <typename T>
-constexpr bool operator==(const MatrixT<4, 4, T> &m1, const MatrixT<4, 4, T> &m2)
+constexpr bool operator==(
+    const MatrixT<4, 4, T> &m1, const MatrixT<4, 4, T> &m2)
 {
     return m1[0] == m2[0] && m1[1] == m2[1] && m1[2] == m2[2] && m1[3] == m2[3];
 }
 
 template <typename T>
-constexpr bool operator!=(const MatrixT<4, 4, T> &m1, const MatrixT<4, 4, T> &m2)
+constexpr bool operator!=(
+    const MatrixT<4, 4, T> &m1, const MatrixT<4, 4, T> &m2)
 {
     return m1[0] != m2[0] || m1[1] != m2[1] || m1[2] != m2[2] || m1[3] != m2[3];
 }

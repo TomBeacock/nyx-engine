@@ -1,8 +1,7 @@
 #pragma once
 
+#include "nyx/types.h"
 #include "vector4.h"
-
-#include <format>
 
 namespace Nyx::Math {
 template <size_t R, size_t C, typename T>
