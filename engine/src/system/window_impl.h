@@ -27,7 +27,7 @@ class WindowImpl {
 
     virtual void set_title(const std::u8string &title) = 0;
     virtual void set_cursor_visibility(bool visible) = 0;
-    virtual Math::UInt2 get_client_size() = 0;
+    virtual Math::Nat2 get_client_size() = 0;
 
   protected:
     WindowImpl() = default;

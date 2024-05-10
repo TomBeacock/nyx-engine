@@ -6,14 +6,15 @@ using namespace Nyx::Math;
 TEST(vector_func, angle)
 {
     EXPECT_FLOAT_EQ(
-        static_cast<float>(pi) / 2.0f, angle(Float2(0, 1), Float2(1, 0)));
-    EXPECT_FLOAT_EQ(static_cast<float>(pi), angle(Float2(-1, 0), Float2(1, 0)));
-    EXPECT_DOUBLE_EQ(pi / 4.0, angle(Double2(0, 1), normalize(Double2(1, 1))));
+        static_cast<float>(pi) / 2.0f, angle(Real2(0, 1), Real2(1, 0)));
+    EXPECT_FLOAT_EQ(static_cast<float>(pi), angle(Real2(-1, 0), Real2(1, 0)));
+    EXPECT_FLOAT_EQ(static_cast<float>(pi / 4.0),
+        angle(Real2(0, 1), normalize(Real2(1, 1))));
 }
 
 TEST(vector_func, distance)
 {
-    EXPECT_FLOAT_EQ(2.0f, distance(Float2(0, 1), Float2(0, 3)));
+    EXPECT_FLOAT_EQ(2.0f, distance(Real2(0, 1), Real2(0, 3)));
 }
 
 TEST(vector_func, dot)
@@ -25,30 +26,29 @@ TEST(vector_func, dot)
 
 TEST(vector_func, lerp)
 {
-    EXPECT_FLOAT_EQ(
-        7.5f, lerp(Float2(5.0f, 0.0f), Float2(10.0f, 0.0f), 0.5f).x);
+    EXPECT_FLOAT_EQ(7.5f, lerp(Real2(5.0f, 0.0f), Real2(10.0f, 0.0f), 0.5f).x);
 }
 
 TEST(vector_func, magnitude)
 {
-    EXPECT_FLOAT_EQ(5, magnitude(Float2(3, 4)));
+    EXPECT_FLOAT_EQ(5, magnitude(Real2(3, 4)));
 }
 
 TEST(vector_func, normalization)
 {
     EXPECT_EQ(Int2(1, 0), normalize(Int2(10, 0)));
-    EXPECT_FLOAT_EQ(0.7071067812f, normalize(Float2(1.0f, 1.0f)).x);
+    EXPECT_FLOAT_EQ(0.7071067812f, normalize(Real2(1.0f, 1.0f)).x);
 }
 
 TEST(vector_func, reflection)
 {
-    EXPECT_DOUBLE_EQ(
-        -1.0, reflect(Double2(1.0, 0.0), normalize(Double2(1.0, 1.0))).y);
-    EXPECT_DOUBLE_EQ(
-        1.0, reflect(Double2(0.0, -1.0), normalize(Double2(1.0, 1.0))).x);
+    EXPECT_FLOAT_EQ(
+        -1.0f, reflect(Real2(1.0f, 0.0f), normalize(Real2(1.0f, 1.0f))).y);
+    EXPECT_FLOAT_EQ(
+        1.0f, reflect(Real2(0.0f, -1.0f), normalize(Real2(1.0f, 1.0f))).x);
 }
 
 TEST(vector_func, sqr_magnitude)
 {
-    EXPECT_FLOAT_EQ(25, sqr_magnitude(Float2(3, 4)));
+    EXPECT_FLOAT_EQ(25, sqr_magnitude(Real2(3, 4)));
 }

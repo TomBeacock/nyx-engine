@@ -38,4 +38,4 @@ IncludeCategories:
     Priority: 1
 IndentWidth: 4
 PointerAlignment: Right
-SortIncludes: false
+SortIncludes: true

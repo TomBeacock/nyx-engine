@@ -24,7 +24,7 @@ class WindowImpl : public Nyx::WindowImpl {
 
     virtual void set_title(const std::u8string &title) override;
     virtual void set_cursor_visibility(bool visible) override;
-    virtual Math::UInt2 get_client_size() override;
+    virtual Math::Nat2 get_client_size() override;
 
     inline HWND get_hwnd() const { return this->handle; };
 
@@ -37,7 +37,7 @@ class WindowImpl : public Nyx::WindowImpl {
 
   private:
     HWND handle = nullptr;
-    Math::Float2 last_mouse_positon = Math::Float2::zero;
+    Math::Vector2 last_mouse_positon = Math::Vector2::zero;
     HCURSOR last_cursor = nullptr;
     bool cursor_visible = true;
     bool cursor_locked = false;

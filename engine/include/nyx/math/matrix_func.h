@@ -5,7 +5,7 @@
 
 namespace Nyx::Math {
 template <size_t R, size_t C, typename T>
-struct Matrix;
+struct MatrixT;
 }  // namespace Nyx::Math
 
 namespace Nyx::Math {
@@ -18,7 +18,7 @@ namespace Nyx::Math {
  * @return The transposed matrix.
  */
 template <size_t R, size_t C, typename T>
-constexpr Matrix<C, R, T> transpose(const Matrix<R, C, T> &m);
+constexpr MatrixT<C, R, T> transpose(const MatrixT<R, C, T> &m);
 
 /**
  * @brief Calculates the determinant of a matrix.
@@ -29,7 +29,7 @@ constexpr Matrix<C, R, T> transpose(const Matrix<R, C, T> &m);
  * @return The determinant.
  */
 template <size_t R, size_t C, typename T>
-constexpr T determinant(const Matrix<R, C, T> &m);
+constexpr T determinant(const MatrixT<R, C, T> &m);
 
 /**
  * @brief Calculates the inversion of a matrix.
@@ -40,18 +40,18 @@ constexpr T determinant(const Matrix<R, C, T> &m);
  * @return The inverted matrix.
  */
 template <size_t R, size_t C, typename T>
-constexpr Matrix<R, C, T> inverse(const Matrix<R, C, T> &m);
+constexpr MatrixT<R, C, T> inverse(const MatrixT<R, C, T> &m);
 
 template <size_t R, size_t C, typename T>
-inline std::ostream &operator<<(std::ostream &os, const Matrix<R, C, T> &m);
+inline std::ostream &operator<<(std::ostream &os, const MatrixT<R, C, T> &m);
 }  // namespace Nyx::Math
 
 template <typename T>
-struct std::formatter<Nyx::Math::Matrix<4, 4, T>> {
+struct std::formatter<Nyx::Math::MatrixT<4, 4, T>> {
     constexpr auto parse(std::format_parse_context &ctx);
 
     auto format(
-        const Nyx::Math::Matrix<4, 4, T> &m, std::format_context &ctx) const;
+        const Nyx::Math::MatrixT<4, 4, T> &m, std::format_context &ctx) const;
 };
 
 #include "matrix_func.inl"

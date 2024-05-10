@@ -1,11 +1,11 @@
 #include "renderer_impl.h"
 
 #include "exception.h"
+#include "nyx/log.h"
 #include "nyx/math.h"
+#include "nyx/string/string_util.h"
 #include "nyx/system/window.h"
 #include "system/msw/window_impl.h"
-#include "nyx/log.h"
-#include "nyx/string/string_util.h"
 
 #include <d3dcompiler.h>
 
@@ -15,8 +15,8 @@ using Microsoft::WRL::ComPtr;
 
 namespace Nyx::D3D12 {
 struct Vertex {
-    Nyx::Math::Float3 position;
-    Nyx::Math::Float3 color;
+    Nyx::Math::Vector3 position;
+    Nyx::Math::Vector3 color;
 };
 
 void get_hardware_adapter(IDXGIFactory4 *factory, IDXGIAdapter1 **adapter);

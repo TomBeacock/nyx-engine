@@ -37,12 +37,12 @@ class Event {
     struct MouseButtonReleased : MouseButtonChanged {};
 
     struct MouseWheelScrolled {
-        Math::Float2 delta;
+        Math::Vector2 delta;
     };
 
     struct MouseMoved {
-        Math::Float2 position;
-        Math::Float2 delta;
+        Math::Vector2 position;
+        Math::Vector2 delta;
     };
 
   public:

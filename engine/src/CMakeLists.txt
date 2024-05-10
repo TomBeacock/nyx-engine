@@ -5,6 +5,7 @@ add_library(nyx STATIC
 	"../include/nyx/init.h" "init.cpp"
 	"../include/nyx/log.h"
 	"../include/nyx/assert.h"
+	"../include/nyx/types.h"
 
 	"../include/nyx/system/app.h" "system/app.cpp"
 	"../include/nyx/system/window.h" "system/window.cpp" 
