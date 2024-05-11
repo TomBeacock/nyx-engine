@@ -4,6 +4,7 @@ add_executable(tests
 	"string/string_util.cpp"
 	"math/vector2.cpp" "math/vector3.cpp" "math/vector4.cpp"
 	"math/vector_func.cpp" 
+	"math/quaternion.cpp"
 	"math/matrix4x4.cpp"
 	"math/matrix_func.cpp"
 )
