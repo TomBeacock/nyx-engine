@@ -192,7 +192,7 @@ void RendererImpl::load_assets()
         ComPtr<ID3DBlob> vertex_shader;
         ComPtr<ID3DBlob> pixel_shader;
 
-        LPCWSTR path = L"" NYX_RES_DIR "shaders/default.hlsl";
+        LPCWSTR path = L"" NYX_ENGINE_RES_DIR "shaders/default.hlsl";
 
 #ifdef NYX_LOGGING_ENABLED
         UINT compile_flags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;

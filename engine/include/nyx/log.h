@@ -4,45 +4,33 @@
 #include <iostream>
 #include <string>
 
-#ifdef NYX_LOGGING_ENABLED
-#define NYX_LOG(msg)                                                           \
-    std::cout << "\x1B[37m"                                                    \
-              << std::format("{} ({}): Info: ", __FILE__ + SOURCE_PATH_LENGTH, \
-                     __LINE__)                                                 \
-              << msg << "\x1B[0m" << std::endl
-#define NYX_WARN(msg)                                                          \
-    std::cout << "\x1B[33m"                                                    \
-              << std::format("{} ({}): Warn: ", __FILE__ + SOURCE_PATH_LENGTH, \
-                     __LINE__)                                                 \
-              << msg << "\x1B[0m" << std::endl
-#define NYX_ERROR(msg)                                                         \
-    std::cout << "\x1B[31m"                                                    \
-              << std::format("{} ({}): Error: ",                               \
-                     __FILE__ + SOURCE_PATH_LENGTH, __LINE__)                  \
-              << msg << "\x1B[0m" << std::endl
-#define NYX_LOG_F(fmt, ...)                                                    \
-    std::cout << "\x1B[37m"                                                    \
-              << std::format("{} ({}): Info: ", __FILE__ + SOURCE_PATH_LENGTH, \
-                     __LINE__)                                                 \
-              << std::format(fmt __VA_OPT__(, ) __VA_ARGS__) << "\x1B[0m"      \
-              << std::endl
-#define NYX_WARN_F(fmt, ...)                                                   \
-    std::cout << "\x1B[33m"                                                    \
-              << std::format("{} ({}): Warn: ", __FILE__ + SOURCE_PATH_LENGTH, \
-                     __LINE__)                                                 \
-              << std::format(fmt __VA_OPT__(, ) __VA_ARGS__) << "\x1B[0m"      \
-              << std::endl
-#define NYX_ERROR_F(fmt, ...)                                                  \
-    std::cout << "\x1B[31m"                                                    \
-              << std::format("{} ({}): Error: ",                               \
-                     __FILE__ + SOURCE_PATH_LENGTH, __LINE__)                  \
-              << std::format(fmt __VA_OPT__(, ) __VA_ARGS__) << "\x1B[0m"      \
-              << std::endl
+#if defined(NYX_DEBUG) || defined(NYX_DEBUG_INFO_ONLY)
+    #define NYX_INTERNAL_LOG_IMPL(type, color, source, msg, ...)               \
+        std ::cout << "\x1B[" #color "m"                                       \
+                   << std::format("{} ({}):" #type ": ",                       \
+                          __FILE__ + NYX_##source##_SOURCE_PATH_LENGTH,        \
+                          __LINE__)                                            \
+                   << std::format(msg __VA_OPT__(, ) __VA_ARGS__) << "\x1B[0m" \
+                   << std::endl
+
+    #define NYX_INFO(msg, ...)                                                 \
+        NYX_INTERNAL_LOG_IMPL(Info, 37, PROJECT, msg, __VA_ARGS__)
+    #define NYX_WARN(msg, ...)                                                 \
+        NYX_INTERNAL_LOG_IMPL(Warn, 33, PROJECT, msg, __VA_ARGS__)
+    #define NYX_ERROR(msg, ...)                                                \
+        NYX_INTERNAL_LOG_IMPL(Error, 31, PROJECT, msg, __VA_ARGS__)
+
+    #define NYX_ENGINE_INFO(msg, ...)                                          \
+        NYX_INTERNAL_LOG_IMPL(Info, 37, ENGINE, msg, __VA_ARGS__)
+    #define NYX_ENGINE_WARN(msg, ...)                                          \
+        NYX_INTERNAL_LOG_IMPL(Warn, 33, ENGINE, msg, __VA_ARGS__)
+    #define NYX_ENGINE_ERROR(msg, ...)                                         \
+        NYX_INTERNAL_LOG_IMPL(Error, 31, ENGINE, msg, __VA_ARGS__)
 #else
-#define NYX_LOG(...)
-#define NYX_WARN(...)
-#define NYX_ERROR(...)
-#define NYX_LOG_F(...)
-#define NYX_WARN_F(...)
-#define NYX_ERROR_F(...)
+    #define NYX_INFO(...)
+    #define NYX_WARN(...)
+    #define NYX_ERROR(...)
+    #define NYX_ENGINE_INFO(...)
+    #define NYX_ENGINE_WARN(...)
+    #define NYX_ENGINE_ERROR(...)
 #endif

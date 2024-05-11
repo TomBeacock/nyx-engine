@@ -156,7 +156,7 @@ constexpr MatrixT<4, 4, T> &MatrixT<4, 4, T>::operator/=(
 template <typename T>
 constexpr MatrixT<4, 4, T>::Col &MatrixT<4, 4, T>::operator[](size_t i)
 {
-    NYX_ASSERT(
+    NYX_ENGINE_ASSERT(
         i >= 0 && i < 4, "Cannot access column, i should be in range [0-3]");
     return cols[i];
 }
@@ -165,7 +165,7 @@ template <typename T>
 constexpr const MatrixT<4, 4, T>::Col &MatrixT<4, 4, T>::operator[](
     size_t i) const
 {
-    NYX_ASSERT(
+    NYX_ENGINE_ASSERT(
         i >= 0 && i < 4, "Cannot access column, i should be in range [0-3]");
     return cols[i];
 }

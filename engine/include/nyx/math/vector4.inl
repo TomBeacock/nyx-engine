@@ -164,7 +164,7 @@ constexpr VectorT<4, T> &VectorT<4, T>::operator/=(const VectorT<4, U> &v)
 template <typename T>
 constexpr T &VectorT<4, T>::operator[](size_t i)
 {
-    NYX_ASSERT(
+    NYX_ENGINE_ASSERT(
         i >= 0 && i < 4, "Cannot access value, i should be in range [0-3]");
     switch (i) {
         default:
@@ -177,7 +177,7 @@ constexpr T &VectorT<4, T>::operator[](size_t i)
 template <typename T>
 constexpr const T &VectorT<4, T>::operator[](size_t i) const
 {
-    NYX_ASSERT(
+    NYX_ENGINE_ASSERT(
         i >= 0 && i < 4, "Cannot access value, i should be in range [0-3]");
     switch (i) {
         default:
