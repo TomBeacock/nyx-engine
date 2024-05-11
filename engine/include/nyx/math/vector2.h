@@ -8,10 +8,11 @@ struct VectorT;
 }  // namespace Nyx::Math
 
 namespace Nyx::Math {
-using Nat2 = VectorT<2, Nat>;
-using Int2 = VectorT<2, Int>;
-using Real2 = VectorT<2, Real>;
-using Vector2 = Real2;
+template <typename T>
+using Vector2 = VectorT<2, T>;
+using Nat2 = Vector2<Nat>;
+using Int2 = Vector2<Int>;
+using Float2 = Vector2<Float>;
 }  // namespace Nyx::Math
 
 namespace Nyx::Math {

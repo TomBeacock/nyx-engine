@@ -15,8 +15,8 @@ using Microsoft::WRL::ComPtr;
 
 namespace Nyx::D3D12 {
 struct Vertex {
-    Nyx::Math::Vector3 position;
-    Nyx::Math::Vector3 color;
+    Nyx::Math::Float3 position;
+    Nyx::Math::Float3 color;
 };
 
 void get_hardware_adapter(IDXGIFactory4 *factory, IDXGIAdapter1 **adapter);
@@ -61,7 +61,7 @@ void RendererImpl::render()
     std::array<ID3D12CommandList *, 1> command_lists = {
         this->command_list.Get()};
     this->command_queue->ExecuteCommandLists(
-        command_lists.size(), command_lists.data());
+        static_cast<UINT>(command_lists.size()), command_lists.data());
     DX::ThrowIfFailed(this->swap_chain->Present(1, 0));
     move_to_next_frame();
 }

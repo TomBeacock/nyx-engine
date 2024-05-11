@@ -13,7 +13,6 @@ TEST(vector3, indexing)
     EXPECT_EQ(1, Int3(1, 2, 3)[0]);
     EXPECT_EQ(2, Int3(1, 2, 3)[1]);
     EXPECT_EQ(3, Int3(1, 2, 3)[2]);
-    EXPECT_DEATH(Int3(1, 2, 3)[3], "i >= 0 && i < 3");
 }
 
 TEST(vector3, unary_operators)

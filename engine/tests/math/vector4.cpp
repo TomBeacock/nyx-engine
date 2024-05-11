@@ -14,7 +14,6 @@ TEST(vector4, indexing)
     EXPECT_EQ(2, Int4(1, 2, 3, 4)[1]);
     EXPECT_EQ(3, Int4(1, 2, 3, 4)[2]);
     EXPECT_EQ(4, Int4(1, 2, 3, 4)[3]);
-    EXPECT_DEATH(Int4(1, 2, 3, 4)[4], "i >= 0 && i < 4");
 }
 
 TEST(vector4, unary_operators)

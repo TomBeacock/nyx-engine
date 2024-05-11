@@ -216,20 +216,20 @@ LRESULT WindowImpl::handle_message(UINT msg, WPARAM w_param, LPARAM l_param)
         case WM_MOUSEWHEEL: {
             float delta = static_cast<float>(GET_WHEEL_DELTA_WPARAM(w_param)) /
                           WHEEL_DELTA;
-            push_event(Event::MouseWheelScrolled{Math::Vector2(0.0f, delta)});
+            push_event(Event::MouseWheelScrolled{Math::Float2(0, delta)});
             return 0;
         }
         case WM_MOUSEHWHEEL: {
             float delta = static_cast<float>(GET_WHEEL_DELTA_WPARAM(w_param)) /
                           WHEEL_DELTA;
-            push_event(Event::MouseWheelScrolled{Math::Vector2(delta, 0.0f)});
+            push_event(Event::MouseWheelScrolled{Math::Float2(delta, 0)});
             return 0;
         }
         case WM_MOUSEMOVE: {
             if (!this->cursor_locked) {
-                Math::Vector2 position(
+                Math::Float2 position(
                     GET_X_LPARAM(l_param), GET_Y_LPARAM(l_param));
-                Math::Vector2 delta = position - this->last_mouse_positon;
+                Math::Float2 delta = position - this->last_mouse_positon;
                 push_event(Event::MouseMoved{position, delta});
                 this->last_mouse_positon = position;
                 return 0;
@@ -304,15 +304,15 @@ LRESULT WindowImpl::handle_raw_input(WPARAM w_param, LPARAM l_param)
                         rect.right = GetSystemMetrics(SM_CXSCREEN);
                         rect.bottom = GetSystemMetrics(SM_CYSCREEN);
                     }
-                    Math::Vector2 absolute(
+                    Math::Float2 absolute(
                         MulDiv(mouse.lLastX, rect.right, 65535) + rect.left,
                         MulDiv(mouse.lLastX, rect.right, 65535) + rect.top);
-                    push_event(Event::MouseMoved{Math::Vector2::zero,
+                    push_event(Event::MouseMoved{Math::Float2::zero,
                         absolute - this->last_mouse_positon});
                     this->last_mouse_positon = absolute;
                 } else if (mouse.lLastX != 0 || mouse.lLastY != 0) {
-                    push_event(Event::MouseMoved{Math::Vector2::zero,
-                        Math::Vector2(mouse.lLastX, mouse.lLastY)});
+                    push_event(Event::MouseMoved{Math::Float2::zero,
+                        Math::Float2(mouse.lLastX, mouse.lLastY)});
                 }
             }
             break;

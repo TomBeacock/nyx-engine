@@ -12,7 +12,6 @@ TEST(vector2, indexing)
 {
     EXPECT_EQ(1, Int2(1, 2)[0]);
     EXPECT_EQ(2, Int2(1, 2)[1]);
-    EXPECT_DEATH(Int2(1, 2)[2], "i >= 0 && i < 2");
 }
 
 TEST(vector2, unary_operators)

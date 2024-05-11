@@ -36,6 +36,7 @@ IncludeCategories:
     Priority: 2
   - Regex: '"([A-Za-z0-9.\Q/-_\E])+"'
     Priority: 1
+IndentPPDirectives: BeforeHash
 IndentWidth: 4
 PointerAlignment: Right
 SortIncludes: true

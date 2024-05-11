@@ -20,7 +20,7 @@ TEST(matrix_func, determinant)
 
 TEST(matrix_func, inverse)
 {
-    EXPECT_EQ(Real4x4(0.5f, 0, 0, 0, 0.5f, -1, 0, 0, 0, 0, 0.5f, 0, 1.0f, 1.0f,
+    EXPECT_EQ(Float4x4(0.5f, 0, 0, 0, 0.5f, -1, 0, 0, 0, 0, 0.5f, 0, 1.0f, 1.0f,
                   2.5f, 1.0f),
-        inverse(Real4x4(2, 0, 0, 0, 1, -1, 0, 0, 0, 0, 2, 0, -3, 1, -5, 1)));
+        inverse(Float4x4(2, 0, 0, 0, 1, -1, 0, 0, 0, 0, 2, 0, -3, 1, -5, 1)));
 }

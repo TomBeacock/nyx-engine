@@ -37,7 +37,7 @@ class WindowImpl : public Nyx::WindowImpl {
 
   private:
     HWND handle = nullptr;
-    Math::Vector2 last_mouse_positon = Math::Vector2::zero;
+    Math::Float2 last_mouse_positon = Math::Float2::zero;
     HCURSOR last_cursor = nullptr;
     bool cursor_visible = true;
     bool cursor_locked = false;

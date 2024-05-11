@@ -9,10 +9,11 @@ struct MatrixT;
 }  // namespace Nyx::Math
 
 namespace Nyx::Math {
-using Nat4x4 = MatrixT<4, 4, Nat>;
-using Int4x4 = MatrixT<4, 4, Int>;
-using Real4x4 = MatrixT<4, 4, Real>;
-using Matrix4x4 = Real4x4;
+template <typename T>
+using Matrix4x4 = MatrixT<4, 4, T>;
+using Nat4x4 = Matrix4x4<Nat>;
+using Int4x4 = Matrix4x4<Int>;
+using Float4x4 = Matrix4x4<Float>;
 }  // namespace Nyx::Math
 
 namespace Nyx::Math {
