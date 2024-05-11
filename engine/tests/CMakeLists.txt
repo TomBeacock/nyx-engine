@@ -7,6 +7,7 @@ add_executable(tests
 	"math/quaternion.cpp"
 	"math/matrix4x4.cpp"
 	"math/matrix_func.cpp"
+	"math/matrix_transform.cpp"
 )
 target_link_libraries(tests PRIVATE nyx GTest::gtest_main)
 target_include_directories(tests PRIVATE "${NYX_SOURCE_DIR}/src")

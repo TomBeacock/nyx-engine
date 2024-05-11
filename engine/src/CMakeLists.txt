@@ -27,6 +27,7 @@ add_library(nyx STATIC
 	"../include/nyx/math/vector4.h" "../include/nyx/math/vector4.inl"
 	"../include/nyx/math/quaternion.h" "../include/nyx/math/quaternion.inl"
 	"../include/nyx/math/matrix_func.h" "../include/nyx/math/matrix_func.inl"
+	"../include/nyx/math/matrix_transform.h" "../include/nyx/math/matrix_transform.inl"
 	"../include/nyx/math/matrix4x4.h" "../include/nyx/math/matrix4x4.inl"
 
 	"../include/nyx/string/string_util.h" "string/string_util.cpp"
