@@ -6,6 +6,7 @@
 #include "math/matrix_func.h"
 #include "math/matrix_transform.h"
 #include "math/quaternion.h"
+#include "math/quaternion_func.h"
 #include "math/trigonometric.h"
 #include "math/vector2.h"
 #include "math/vector3.h"
