@@ -3,11 +3,11 @@ BasedOnStyle: Chromium
 ---
 Language: Cpp
 AccessModifierOffset: -2
-AlignAfterOpenBracket: DontAlign
+AlignAfterOpenBracket: AlwaysBreak
 AlignEscapedNewlines: Right
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortEnumsOnASingleLine: false
-BinPackParameters: true
+BinPackArguments: false
 BraceWrapping:
   AfterCaseLabel: false
   AfterClass: false
@@ -38,5 +38,6 @@ IncludeCategories:
     Priority: 1
 IndentPPDirectives: BeforeHash
 IndentWidth: 4
+PenaltyReturnTypeOnItsOwnLine: 1000
 PointerAlignment: Right
 SortIncludes: true
