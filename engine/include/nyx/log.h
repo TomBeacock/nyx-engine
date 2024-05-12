@@ -7,7 +7,8 @@
 #if defined(NYX_DEBUG) || defined(NYX_DEBUG_INFO_ONLY)
     #define NYX_INTERNAL_LOG_IMPL(type, color, source, msg, ...)               \
         std ::cout << "\x1B[" #color "m"                                       \
-                   << std::format("{} ({}):" #type ": ",                       \
+                   << std::format(                                             \
+                          "{} ({}): " #type ": ",                              \
                           __FILE__ + NYX_##source##_SOURCE_PATH_LENGTH,        \
                           __LINE__)                                            \
                    << std::format(msg __VA_OPT__(, ) __VA_ARGS__) << "\x1B[0m" \
