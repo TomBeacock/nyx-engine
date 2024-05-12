@@ -58,7 +58,9 @@ constexpr MatrixT<M, M, T> scale(const VectorT<L, T> &s);
  */
 template <typename T>
 constexpr MatrixT<4, 4, T> transformation(
-    const VectorT<3, T> &t, const QuaternionT<T> &r, const VectorT<3, T> &s);
+    const VectorT<3, T> &t,
+    const QuaternionT<T> &r,
+    const VectorT<3, T> &s);
 
 /**
  * @brief Create a view matrix.
@@ -69,7 +71,8 @@ constexpr MatrixT<4, 4, T> transformation(
  */
 template <typename T>
 constexpr MatrixT<4, 4, T> view(
-    const VectorT<3, T> &t, const QuaternionT<T> &r);
+    const VectorT<3, T> &t,
+    const QuaternionT<T> &r);
 
 /**
  * @brief Create an orthographic projection matrix.
@@ -96,7 +99,12 @@ constexpr MatrixT<4, 4, T> orthographic(T width, T height, T front, T back);
  */
 template <typename T>
 constexpr MatrixT<4, 4, T> orthographic(
-    T left, T right, T top, T bottom, T front, T back);
+    T left,
+    T right,
+    T top,
+    T bottom,
+    T front,
+    T back);
 
 /**
  * @brief Create a perspective projection matrix.
@@ -123,7 +131,12 @@ constexpr MatrixT<4, 4, T> perspective(T fov, T aspect, T front, T back);
  */
 template <typename T>
 constexpr MatrixT<4, 4, T> perspective(
-    T left, T right, T top, T bottom, T front, T back);
+    T left,
+    T right,
+    T top,
+    T bottom,
+    T front,
+    T back);
 }  // namespace Nyx::Math
 
 #include "matrix_transform.inl"
