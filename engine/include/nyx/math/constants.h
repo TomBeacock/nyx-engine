@@ -1,5 +1,6 @@
 #pragma once
 
+#include <limits>
 #include <numbers>
 
 namespace Nyx::Math {
@@ -16,4 +17,5 @@ using std::numbers::phi;
 using std::numbers::pi;
 using std::numbers::sqrt2;
 using std::numbers::sqrt3;
+constexpr inline double epsilon = std::numeric_limits<double>::epsilon();
 }  // namespace Nyx::Math
