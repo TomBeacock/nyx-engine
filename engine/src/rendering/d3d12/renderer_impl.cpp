@@ -2,7 +2,6 @@
 
 #include "exception.h"
 #include "nyx/log.h"
-#include "nyx/math.h"
 #include "nyx/string/string_util.h"
 #include "nyx/system/window.h"
 #include "system/msw/window_impl.h"
@@ -27,10 +26,15 @@ RendererImpl::RendererImpl()
       use_warp_device(false),
       rtv_desc_size(),
       vertex_buffer_view(),
+      constant_buffer_data(),
+      cbv_data_begin(nullptr),
       frame_index(),
       fence_event(),
       fence_values()
-{}
+{
+    this->constant_buffer_data.model = Math::Float4x4::identity;
+    this->constant_buffer_data.projection = Math::Float4x4::identity;
+}
 
 RendererImpl::~RendererImpl()
 {
@@ -40,19 +44,38 @@ RendererImpl::~RendererImpl()
 
 void RendererImpl::init(const Window &window)
 {
-    uint32_t width = window.get_client_width();
-    uint32_t height = window.get_client_height();
+    Nat32 width = window.get_client_width();
+    Nat32 height = window.get_client_height();
 
-    this->viewport = {0.0f, 0.0f, static_cast<float>(width),
-        static_cast<float>(height), 0.0f, 1.0f};
+    this->viewport = {
+        0.0f,
+        0.0f,
+        static_cast<float>(width),
+        static_cast<float>(height),
+        0.0f,
+        1.0f};
     this->scissor_rect = {
         0, 0, static_cast<long>(width), static_cast<long>(height)};
+    float aspect = static_cast<float>(width) / static_cast<float>(height);
+    this->constant_buffer_data.projection =
+        Math::orthographic(4.0f * aspect, 4.0f, -1.0f, 1.0f);
 
     const Nyx::MSW::WindowImpl &window_impl =
         dynamic_cast<const Nyx::MSW::WindowImpl &>(window.get_impl());
-
     load_pipeline(width, height, window_impl.get_hwnd());
     load_assets();
+}
+
+void RendererImpl::update()
+{
+    static Math::Quaternion rotation{};
+    rotation = Math::rotate(rotation, 0.1f, Math::Float3::up);
+    this->constant_buffer_data.model = Math::transformation(
+        Math::Float3(0.0f, 0.0f, 0.5f), rotation, Math::Float3::one);
+    memcpy(
+        this->cbv_data_begin,
+        &this->constant_buffer_data,
+        sizeof(this->constant_buffer_data));
 }
 
 void RendererImpl::render()
@@ -88,13 +111,17 @@ void RendererImpl::load_pipeline(uint32_t width, uint32_t height, HWND handle)
             ComPtr<IDXGIAdapter> warp_adapter;
             DX::ThrowIfFailed(
                 factory->EnumWarpAdapter(IID_PPV_ARGS(&warp_adapter)));
-            DX::ThrowIfFailed(D3D12CreateDevice(warp_adapter.Get(),
-                D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&this->device)));
+            DX::ThrowIfFailed(D3D12CreateDevice(
+                warp_adapter.Get(),
+                D3D_FEATURE_LEVEL_11_0,
+                IID_PPV_ARGS(&this->device)));
         } else {
             ComPtr<IDXGIAdapter1> hardware_adapter;
             get_hardware_adapter(factory.Get(), &hardware_adapter);
-            DX::ThrowIfFailed(D3D12CreateDevice(hardware_adapter.Get(),
-                D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&this->device)));
+            DX::ThrowIfFailed(D3D12CreateDevice(
+                hardware_adapter.Get(),
+                D3D_FEATURE_LEVEL_11_0,
+                IID_PPV_ARGS(&this->device)));
         }
     }
 
@@ -150,6 +177,15 @@ void RendererImpl::load_pipeline(uint32_t width, uint32_t height, HWND handle)
             &rtv_heap_desc, IID_PPV_ARGS(&this->rtv_heap)));
         this->rtv_desc_size = this->device->GetDescriptorHandleIncrementSize(
             D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
+        // Constant buffer descriptor heap
+        D3D12_DESCRIPTOR_HEAP_DESC cbv_heap_desc{
+            .Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+            .NumDescriptors = 1,
+            .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
+        };
+        DX::ThrowIfFailed(this->device->CreateDescriptorHeap(
+            &cbv_heap_desc, IID_PPV_ARGS(&this->cbv_heap)));
     }
 
     // Create frame resources
@@ -174,15 +210,42 @@ void RendererImpl::load_assets()
 {
     // Create root signature
     {
-        CD3DX12_ROOT_SIGNATURE_DESC root_signature_desc{};
-        root_signature_desc.Init(0, nullptr, 0, nullptr,
-            D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+        std::array<CD3DX12_DESCRIPTOR_RANGE1, 1> ranges{};
+        ranges[0].Init(
+            D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
+            1,
+            0,
+            0,
+            D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+        std::array<CD3DX12_ROOT_PARAMETER1, 1> root_params{};
+        root_params[0].InitAsDescriptorTable(
+            static_cast<UINT>(ranges.size()),
+            ranges.data(),
+            D3D12_SHADER_VISIBILITY_VERTEX);
+
+        D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags =
+            D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
+            D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+            D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+            D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
+            D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+
+        CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC root_signature_desc{};
+        root_signature_desc.Init_1_1(
+            static_cast<UINT>(root_params.size()),
+            root_params.data(),
+            0,
+            nullptr,
+            root_signature_flags);
+
         ComPtr<ID3DBlob> signature;
         ComPtr<ID3DBlob> error;
-        DX::ThrowIfFailed(D3D12SerializeRootSignature(&root_signature_desc,
-            D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
-        DX::ThrowIfFailed(this->device->CreateRootSignature(0,
-            signature->GetBufferPointer(), signature->GetBufferSize(),
+        DX::ThrowIfFailed(D3D12SerializeVersionedRootSignature(
+            &root_signature_desc, &signature, &error));
+        DX::ThrowIfFailed(this->device->CreateRootSignature(
+            0,
+            signature->GetBufferPointer(),
+            signature->GetBufferSize(),
             IID_PPV_ARGS(&this->root_signature)));
     }
 
@@ -194,24 +257,58 @@ void RendererImpl::load_assets()
 
         LPCWSTR path = L"" NYX_ENGINE_RES_DIR "shaders/default.hlsl";
 
-#ifdef NYX_LOGGING_ENABLED
+#if defined(NYX_DEBUG) || defined(NYX_DEBUG_INFO_ONLY)
         UINT compile_flags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
         ComPtr<ID3DBlob> error;
-        if (FAILED(D3DCompileFromFile(path, nullptr, nullptr, "VSMain",
-                "vs_5_0", compile_flags, 0, &vertex_shader, &error))) {
-            NYX_ERROR(static_cast<char *>(error->GetBufferPointer()));
+        if (FAILED(D3DCompileFromFile(
+                path,
+                nullptr,
+                nullptr,
+                "VSMain",
+                "vs_5_0",
+                compile_flags,
+                0,
+                &vertex_shader,
+                &error))) {
+            NYX_ENGINE_ERROR(
+                "{}", static_cast<char *>(error->GetBufferPointer()));
             throw std::exception();
         }
-        if (FAILED(D3DCompileFromFile(path, nullptr, nullptr, "PSMain",
-                "ps_5_0", compile_flags, 0, &pixel_shader, &error))) {
-            NYX_ERROR(static_cast<char *>(error->GetBufferPointer()));
+        if (FAILED(D3DCompileFromFile(
+                path,
+                nullptr,
+                nullptr,
+                "PSMain",
+                "ps_5_0",
+                compile_flags,
+                0,
+                &pixel_shader,
+                &error))) {
+            NYX_ENGINE_ERROR(
+                "{}", static_cast<char *>(error->GetBufferPointer()));
             throw std::exception();
         }
 #else
-        DX::ThrowIfFailed(D3DCompileFromFile(path, nullptr, nullptr, "VSMain",
-            "vs_5_0", 0, 0, &vertex_shader, nullptr));
-        DX::ThrowIfFailed(D3DCompileFromFile(path, nullptr, nullptr, "PSMain",
-            "ps_5_0", 0, 0, &pixel_shader, nullptr));
+        DX::ThrowIfFailed(D3DCompileFromFile(
+            path,
+            nullptr,
+            nullptr,
+            "VSMain",
+            "vs_5_0",
+            0,
+            0,
+            &vertex_shader,
+            nullptr));
+        DX::ThrowIfFailed(D3DCompileFromFile(
+            path,
+            nullptr,
+            nullptr,
+            "PSMain",
+            "ps_5_0",
+            0,
+            0,
+            &pixel_shader,
+            nullptr));
 #endif
 
         // Define vertex input layout
@@ -281,9 +378,12 @@ void RendererImpl::load_assets()
     {
         ComPtr<ID3D12CommandAllocator> command_allocator =
             this->command_allocators[this->frame_index];
-        DX::ThrowIfFailed(this->device->CreateCommandList(0,
-            D3D12_COMMAND_LIST_TYPE_DIRECT, command_allocator.Get(),
-            this->pipeline_state.Get(), IID_PPV_ARGS(&this->command_list)));
+        DX::ThrowIfFailed(this->device->CreateCommandList(
+            0,
+            D3D12_COMMAND_LIST_TYPE_DIRECT,
+            command_allocator.Get(),
+            this->pipeline_state.Get(),
+            IID_PPV_ARGS(&this->command_list)));
         DX::ThrowIfFailed(this->command_list->Close());
     }
 
@@ -298,11 +398,15 @@ void RendererImpl::load_assets()
 
         // TODO: Replace with more efficient heap upload method
         CD3DX12_HEAP_PROPERTIES heap_props(D3D12_HEAP_TYPE_UPLOAD);
-        auto desc =
+        auto res_desc =
             CD3DX12_RESOURCE_DESC::Buffer(static_cast<UINT>(vertex_data_size));
-        DX::ThrowIfFailed(this->device->CreateCommittedResource(&heap_props,
-            D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_GENERIC_READ,
-            nullptr, IID_PPV_ARGS(&this->vertex_buffer)));
+        DX::ThrowIfFailed(this->device->CreateCommittedResource(
+            &heap_props,
+            D3D12_HEAP_FLAG_NONE,
+            &res_desc,
+            D3D12_RESOURCE_STATE_GENERIC_READ,
+            nullptr,
+            IID_PPV_ARGS(&this->vertex_buffer)));
 
         // Copy vertex data to vertex buffer
         UINT8 *vertex_data_begin = nullptr;
@@ -319,6 +423,35 @@ void RendererImpl::load_assets()
             static_cast<UINT>(sizeof(Vertex));
         this->vertex_buffer_view.SizeInBytes =
             static_cast<UINT>(vertex_data_size);
+    }
+
+    // Create constant buffer
+    {
+        const UINT buffer_size = sizeof(ConstantBufferData);
+        CD3DX12_HEAP_PROPERTIES heap_props(D3D12_HEAP_TYPE_UPLOAD);
+        auto res_desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size);
+        DX::ThrowIfFailed(this->device->CreateCommittedResource(
+            &heap_props,
+            D3D12_HEAP_FLAG_NONE,
+            &res_desc,
+            D3D12_RESOURCE_STATE_GENERIC_READ,
+            nullptr,
+            IID_PPV_ARGS(&this->constant_buffer)));
+
+        D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {
+            .BufferLocation = this->constant_buffer->GetGPUVirtualAddress(),
+            .SizeInBytes = buffer_size,
+        };
+        this->device->CreateConstantBufferView(
+            &cbv_desc, this->cbv_heap->GetCPUDescriptorHandleForHeapStart());
+
+        CD3DX12_RANGE read_range(0, 0);
+        DX::ThrowIfFailed(this->constant_buffer->Map(
+            0, &read_range, reinterpret_cast<void **>(&this->cbv_data_begin)));
+        memcpy(
+            this->cbv_data_begin,
+            &this->constant_buffer_data,
+            sizeof(this->constant_buffer_data));
     }
 
     // Create synchronization objects
@@ -350,15 +483,22 @@ void RendererImpl::record_command_list()
     this->command_list->SetGraphicsRootSignature(this->root_signature.Get());
     this->command_list->RSSetViewports(1, &this->viewport);
     this->command_list->RSSetScissorRects(1, &this->scissor_rect);
+    std::array<ID3D12DescriptorHeap *, 1> heaps = {cbv_heap.Get()};
+    this->command_list->SetDescriptorHeaps(
+        static_cast<UINT>(heaps.size()), heaps.data());
+    this->command_list->SetGraphicsRootDescriptorTable(
+        0, this->cbv_heap->GetGPUDescriptorHandleForHeapStart());
 
     // Indicate that the back buffer will be used as a render target
     auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
         this->render_targets[this->frame_index].Get(),
-        D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+        D3D12_RESOURCE_STATE_PRESENT,
+        D3D12_RESOURCE_STATE_RENDER_TARGET);
     this->command_list->ResourceBarrier(1, &barrier);
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(
-        this->rtv_heap->GetCPUDescriptorHandleForHeapStart(), this->frame_index,
+        this->rtv_heap->GetCPUDescriptorHandleForHeapStart(),
+        this->frame_index,
         this->rtv_desc_size);
     this->command_list->OMSetRenderTargets(1, &rtv_handle, FALSE, nullptr);
 
@@ -374,7 +514,8 @@ void RendererImpl::record_command_list()
     // Indicate that the back buffer will now be used to present
     barrier = CD3DX12_RESOURCE_BARRIER::Transition(
         this->render_targets[this->frame_index].Get(),
-        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+        D3D12_RESOURCE_STATE_RENDER_TARGET,
+        D3D12_RESOURCE_STATE_PRESENT);
     this->command_list->ResourceBarrier(1, &barrier);
 
     DX::ThrowIfFailed(this->command_list->Close());
@@ -419,17 +560,22 @@ void get_hardware_adapter(IDXGIFactory4 *factory, IDXGIAdapter1 **adapter)
         }
 
         // Check to see if the adapter supports Direct3D 12
-        if (SUCCEEDED(D3D12CreateDevice(found_adapter, D3D_FEATURE_LEVEL_11_0,
-                _uuidof(ID3D12Device), nullptr))) {
+        if (SUCCEEDED(D3D12CreateDevice(
+                found_adapter,
+                D3D_FEATURE_LEVEL_11_0,
+                _uuidof(ID3D12Device),
+                nullptr))) {
             *adapter = found_adapter;
-#ifdef NYX_LOGGING_ENABLED
+#if defined(NYX_DEBUG) || defined(NYX_DEBUG_INFO_ONLY)
             DXGI_ADAPTER_DESC adapter_desc;
             found_adapter->GetDesc(&adapter_desc);
-            NYX_LOG_F("GPU Description:\nName: {}\nVendor ID: {}\nVRAM: {}",
+            NYX_ENGINE_INFO(
+                "GPU Description:\nName: {}\nVendor ID: {}\nVRAM: {}",
                 reinterpret_cast<const char *>(
                     wstring_to_utf8(std::wstring(adapter_desc.Description))
                         .data()),
-                adapter_desc.VendorId, adapter_desc.DedicatedVideoMemory);
+                adapter_desc.VendorId,
+                adapter_desc.DedicatedVideoMemory);
 #endif
             return;
         }

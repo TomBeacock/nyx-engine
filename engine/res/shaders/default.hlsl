@@ -1,3 +1,9 @@
+cbuffer ModelViewProjectionConstantBuffer : register(b0)
+{
+    matrix model;
+    matrix projection;
+    float padding[32];
+};
 
 struct PS_INPUT
 {
@@ -8,7 +14,7 @@ struct PS_INPUT
 PS_INPUT VSMain(float3 position : POSITION, float3 color : COLOR)
 {
     PS_INPUT ps_input;
-    ps_input.position = float4(position, 1.0);
+    ps_input.position = mul(projection, mul(model, float4(position, 1.0)));
     ps_input.color = color;
     return ps_input;
 }

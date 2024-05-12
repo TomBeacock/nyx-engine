@@ -23,6 +23,7 @@ void App::execute()
         while (const auto event = this->window->poll_event()) {
             this->handle_event(event);
         }
+        this->renderer->update();
         this->renderer->render();
     }
 }
@@ -34,25 +35,21 @@ void App::handle_event(const Event &event)
         return;
     }
     if (const auto data = event.get_if<Nyx::Event::KeyPressed>()) {
-        NYX_ENGINE_INFO("{}", data->key_code);
         return;
     }
     if (const auto data = event.get_if<Nyx::Event::KeyReleased>()) {
         return;
     }
     if (const auto data = event.get_if<Nyx::Event::MouseButtonPressed>()) {
-        NYX_ENGINE_INFO("{} {}", data->mouse_button, data->position);
         return;
     }
     if (const auto data = event.get_if<Nyx::Event::MouseButtonReleased>()) {
         return;
     }
     if (const auto data = event.get_if<Nyx::Event::MouseWheelScrolled>()) {
-        NYX_ENGINE_INFO("{}", data->delta);
         return;
     }
     if (const auto data = event.get_if<Nyx::Event::MouseMoved>()) {
-        NYX_ENGINE_INFO("{} {}", data->position, data->delta);
         return;
     }
 }

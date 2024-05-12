@@ -3,10 +3,10 @@
 #include "nyx/system/window.h"
 
 #ifdef NYX_GRAPHICS_D3D12
-#include "d3d12/renderer_impl.h"
+    #include "d3d12/renderer_impl.h"
 using RendererImplType = Nyx::D3D12::RendererImpl;
 #else
-#error Unsupported graphics api
+    #error Unsupported graphics api
 #endif
 
 namespace Nyx {
@@ -17,6 +17,11 @@ Renderer::~Renderer() {}
 void Renderer::init(const Window &window)
 {
     this->renderer_impl->init(window);
+}
+
+void Renderer::update()
+{
+    this->renderer_impl->update();
 }
 
 void Renderer::render()

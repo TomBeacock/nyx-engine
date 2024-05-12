@@ -14,12 +14,17 @@ class Renderer {
     ~Renderer();
 
     /**
-     * Initialize the renderer
+     * @brief Initialize the renderer.
      */
     void init(const Window &window);
 
     /**
-     * Render the next frame
+     * @brief Update the renderer state.
+     */
+    void update();
+
+    /**
+     * @brief Render the next frame.
      */
     void render();
 
