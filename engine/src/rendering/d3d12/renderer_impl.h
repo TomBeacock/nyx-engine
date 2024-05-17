@@ -1,6 +1,7 @@
 #pragma once
 
 #include "nyx/math.h"
+#include "nyx/types.h"
 #include "rendering/renderer_impl.h"
 
 // clang-format off
@@ -34,10 +35,12 @@ class RendererImpl : public Nyx::RendererImpl {
     virtual void init(const Window &window) override;
     virtual void update() override;
     virtual void render() override;
+    virtual void resize(Nat32 width, Nat32 height) override;
 
   private:
-    void load_pipeline(uint32_t width, uint32_t height, HWND handle);
+    void load_pipeline(Nat32 width, Nat32 height, HWND handle);
     void load_assets();
+    void load_size_dependent_resources();
     void record_command_list();
     void wait_for_gpu();
     void move_to_next_frame();

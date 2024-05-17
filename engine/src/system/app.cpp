@@ -7,11 +7,9 @@
 #include "rendering/renderer.h"
 
 namespace Nyx {
-App::App()
-    : window(std::make_unique<Window>()), renderer(std::make_unique<Renderer>())
+App::App() : window(std::make_unique<Window>())
 {
     this->window->show();
-    this->renderer->init(*this->window);
 }
 
 App::~App() {}
@@ -23,8 +21,8 @@ void App::execute()
         while (const auto event = this->window->poll_event()) {
             this->handle_event(event);
         }
-        this->renderer->update();
-        this->renderer->render();
+        this->window->update();
+        this->window->present();
     }
 }
 

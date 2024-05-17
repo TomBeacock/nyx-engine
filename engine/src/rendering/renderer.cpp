@@ -28,4 +28,9 @@ void Renderer::render()
 {
     this->renderer_impl->render();
 }
+
+void Renderer::resize(Nat32 width, Nat32 height)
+{
+    this->renderer_impl->resize(width, height);
+}
 }  // namespace Nyx

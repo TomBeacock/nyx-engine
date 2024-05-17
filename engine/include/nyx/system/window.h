@@ -1,72 +1,90 @@
 #pragma once
 
+#include "nyx/types.h"
+
 #include <memory>
 #include <string>
 
 namespace Nyx {
 class Event;
 class WindowImpl;
+class Renderer;
 }  // namespace Nyx
 
 namespace Nyx {
 class Window {
   public:
     Window();
+    Window(const Window &) = delete;
+    Window(const Window &&) = delete;
     ~Window();
 
+    Window &operator=(const Window &) = delete;
+    Window &operator=(const Window &&) = delete;
+
     /**
-     * Show the window.
+     * @brief Update the window.
+     */
+    void update();
+
+    /**
+     * @brief Present the next frame.
+     */
+    void present();
+
+    /**
+     * @brief Show the window.
      */
     void show();
 
     /**
-     * Maximise the window to fill screen.
+     * @brief Maximise the window to fill screen.
      */
     void maximise();
 
     /**
-     * Minimise the window to the taskbar.
+     * @brief Minimise the window to the taskbar.
      */
     void minimise();
 
     /**
-     * Restore the window to previous size.
+     * @brief Restore the window to previous size.
      */
     void restore();
 
     /**
-     * Poll the window for the next event.
+     * @brief Poll the window for the next event.
      *
      * @return The polled event.
      */
     Event poll_event();
 
     /**
-     * Set the window's title.
+     * @brief Set the window's title.
      *
      * @param title UTF-8 encoded string.
      */
     void set_title(const std::u8string &title);
 
     /**
-     * Set the cursor's visibility.
+     * @brief Set the cursor's visibility.
      *
      * @param visible Should the cursor be visible.
      */
     void set_cursor_visibility(bool visible);
 
     /**
-     * Get the width of the client area of the window
+     * @brief Get the width of the client area of the window
      */
     uint32_t get_client_width() const;
 
     /**
-     * Get the height of the client area of the window
+     * @brief Get the height of the client area of the window
      */
     uint32_t get_client_height() const;
 
     /**
-     * Get the underlying platform implementation
+     * @brief Get the underlying platform implementation
      *
      * @return The platform implmentatioin
      */
@@ -77,6 +95,7 @@ class Window {
 
   private:
     std::unique_ptr<WindowImpl> window_impl;
-    uint32_t width, height;
+    std::unique_ptr<Renderer> renderer;
+    Nat32 width, height;
 };
 }  // namespace Nyx

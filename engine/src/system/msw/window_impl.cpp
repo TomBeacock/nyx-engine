@@ -24,9 +24,19 @@ WindowImpl::WindowImpl()
     RegisterClass(&window_class);
 
     // Create window
-    this->handle = CreateWindowEx(0, L"Main Window", L"Sample Window",
-        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-        CW_USEDEFAULT, nullptr, nullptr, GetModuleHandle(nullptr), this);
+    this->handle = CreateWindowEx(
+        0,
+        L"Main Window",
+        L"Sample Window",
+        WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT,
+        CW_USEDEFAULT,
+        CW_USEDEFAULT,
+        CW_USEDEFAULT,
+        nullptr,
+        nullptr,
+        GetModuleHandle(nullptr),
+        this);
 
     // Set initial cursor
     this->last_cursor = LoadCursor(nullptr, IDC_ARROW);
@@ -47,7 +57,8 @@ WindowImpl::WindowImpl()
         },
     };
 
-    if (RegisterRawInputDevices(devices.data(),
+    if (RegisterRawInputDevices(
+            devices.data(),
             static_cast<UINT>(devices.size()),
             sizeof(RAWINPUTDEVICE)) == false) {
         std::cout << "Failed to register devices: " << GetLastError()
@@ -150,8 +161,8 @@ LRESULT WindowImpl::handle_message(UINT msg, WPARAM w_param, LPARAM l_param)
             UINT width = LOWORD(l_param);
             UINT height = HIWORD(l_param);
             push_event(Event::WindowResized{
-                static_cast<uint32_t>(width),
-                static_cast<uint32_t>(height),
+                static_cast<Nat32>(width),
+                static_cast<Nat32>(height),
             });
             return 0;
         }
@@ -262,11 +273,19 @@ LRESULT WindowImpl::handle_raw_input(WPARAM w_param, LPARAM l_param)
 {
     // Get input data
     UINT size = 0;
-    GetRawInputData(reinterpret_cast<HRAWINPUT>(l_param), RID_INPUT, nullptr,
-        &size, sizeof(RAWINPUTHEADER));
+    GetRawInputData(
+        reinterpret_cast<HRAWINPUT>(l_param),
+        RID_INPUT,
+        nullptr,
+        &size,
+        sizeof(RAWINPUTHEADER));
     std::vector<BYTE> raw_input_data(size);
-    GetRawInputData(reinterpret_cast<HRAWINPUT>(l_param), RID_INPUT,
-        raw_input_data.data(), &size, sizeof(RAWINPUTHEADER));
+    GetRawInputData(
+        reinterpret_cast<HRAWINPUT>(l_param),
+        RID_INPUT,
+        raw_input_data.data(),
+        &size,
+        sizeof(RAWINPUTHEADER));
     RAWINPUT *raw_input = reinterpret_cast<RAWINPUT *>(raw_input_data.data());
 
     // Process data
@@ -307,11 +326,13 @@ LRESULT WindowImpl::handle_raw_input(WPARAM w_param, LPARAM l_param)
                     Math::Float2 absolute(
                         MulDiv(mouse.lLastX, rect.right, 65535) + rect.left,
                         MulDiv(mouse.lLastX, rect.right, 65535) + rect.top);
-                    push_event(Event::MouseMoved{Math::Float2::zero,
+                    push_event(Event::MouseMoved{
+                        Math::Float2::zero,
                         absolute - this->last_mouse_positon});
                     this->last_mouse_positon = absolute;
                 } else if (mouse.lLastX != 0 || mouse.lLastY != 0) {
-                    push_event(Event::MouseMoved{Math::Float2::zero,
+                    push_event(Event::MouseMoved{
+                        Math::Float2::zero,
                         Math::Float2(mouse.lLastX, mouse.lLastY)});
                 }
             }

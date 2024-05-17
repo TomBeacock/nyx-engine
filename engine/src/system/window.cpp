@@ -1,20 +1,36 @@
 #include "nyx/system/window.h"
 
 #include "nyx/events.h"
+#include "rendering/renderer.h"
 
 #ifdef NYX_PLATFORM_MSW
-#include "system/msw/window_impl.h"
+    #include "system/msw/window_impl.h"
 using WindowImplType = Nyx::MSW::WindowImpl;
 #else
-#error Unsupported platform
+    #error Unsupported platform
 #endif
 
 namespace Nyx {
 Window::Window()
-    : window_impl(std::make_unique<WindowImplType>()), width(0), height(0)
-{}
+    : window_impl(std::make_unique<WindowImplType>()),
+      renderer(std::make_unique<Renderer>()),
+      width(0),
+      height(0)
+{
+    this->renderer->init(*this);
+}
 
 Window::~Window() {}
+
+void Window::update()
+{
+    this->renderer->update();
+}
+
+void Window::present()
+{
+    this->renderer->render();
+}
 
 void Window::show()
 {
@@ -73,6 +89,7 @@ void Window::filter_event(const Event &event)
     if (const auto data = event.get_if<Event::WindowResized>()) {
         this->width = data->width;
         this->height = data->height;
+        this->renderer->resize(this->width, this->height);
     }
 }
 }  // namespace Nyx

@@ -89,10 +89,46 @@ void RendererImpl::render()
     move_to_next_frame();
 }
 
-void RendererImpl::load_pipeline(uint32_t width, uint32_t height, HWND handle)
+void RendererImpl::resize(Nat32 width, Nat32 height)
+{
+    wait_for_gpu();
+
+    for (UINT i = 0; i < frame_count; i++) {
+        this->render_targets[i].Reset();
+        this->fence_values[i] = this->fence_values[this->frame_index];
+    }
+
+    DXGI_SWAP_CHAIN_DESC swap_chain_desc{};
+    this->swap_chain->GetDesc(&swap_chain_desc);
+    this->swap_chain->ResizeBuffers(
+        this->frame_count,
+        static_cast<UINT>(width),
+        static_cast<UINT>(height),
+        swap_chain_desc.BufferDesc.Format,
+        swap_chain_desc.Flags);
+
+    this->frame_index = this->swap_chain->GetCurrentBackBufferIndex();
+
+    this->viewport = {
+        0.0f,
+        0.0f,
+        static_cast<float>(width),
+        static_cast<float>(height),
+        0.0f,
+        1.0f};
+    this->scissor_rect = {
+        0, 0, static_cast<long>(width), static_cast<long>(height)};
+    float aspect = static_cast<float>(width) / static_cast<float>(height);
+    this->constant_buffer_data.projection =
+        Math::orthographic(4.0f * aspect, 4.0f, -1.0f, 1.0f);
+
+    load_size_dependent_resources();
+}
+
+void RendererImpl::load_pipeline(Nat32 width, Nat32 height, HWND handle)
 {
     // Enable debug layer
-#ifdef NYX_LOGGING_ENABLED
+#if defined(NYX_DEBUG)
     {
         ComPtr<ID3D12Debug> debug_controller;
         if (SUCCEEDED(
@@ -165,7 +201,7 @@ void RendererImpl::load_pipeline(uint32_t width, uint32_t height, HWND handle)
         this->frame_index = this->swap_chain->GetCurrentBackBufferIndex();
     }
 
-    // Create  descriptor heaps
+    // Create descriptor heaps
     {
         // Render target view heap
         D3D12_DESCRIPTOR_HEAP_DESC rtv_heap_desc{
@@ -188,17 +224,9 @@ void RendererImpl::load_pipeline(uint32_t width, uint32_t height, HWND handle)
             &cbv_heap_desc, IID_PPV_ARGS(&this->cbv_heap)));
     }
 
-    // Create frame resources
+    // Create command allocators
     {
-        CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_heap_handle(
-            this->rtv_heap->GetCPUDescriptorHandleForHeapStart());
         for (UINT i = 0; i < this->frame_count; i++) {
-            DX::ThrowIfFailed(this->swap_chain->GetBuffer(
-                i, IID_PPV_ARGS(&this->render_targets[i])));
-            this->device->CreateRenderTargetView(
-                this->render_targets[i].Get(), nullptr, rtv_heap_handle);
-            rtv_heap_handle.Offset(1, this->rtv_desc_size);
-
             DX::ThrowIfFailed(this->device->CreateCommandAllocator(
                 D3D12_COMMAND_LIST_TYPE_DIRECT,
                 IID_PPV_ARGS(&this->command_allocators[i])));
@@ -387,6 +415,8 @@ void RendererImpl::load_assets()
         DX::ThrowIfFailed(this->command_list->Close());
     }
 
+    load_size_dependent_resources();
+
     // Create vertex buffer
     {
         std::array<Vertex, 3> vertex_data = {
@@ -469,6 +499,23 @@ void RendererImpl::load_assets()
 
         // Wait for the command list to execute
         wait_for_gpu();
+    }
+}
+
+void RendererImpl::load_size_dependent_resources()
+{
+    // Create frame resources
+    {
+        CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_heap_handle(
+            this->rtv_heap->GetCPUDescriptorHandleForHeapStart());
+
+        for (UINT i = 0; i < this->frame_count; i++) {
+            DX::ThrowIfFailed(this->swap_chain->GetBuffer(
+                i, IID_PPV_ARGS(&this->render_targets[i])));
+            this->device->CreateRenderTargetView(
+                this->render_targets[i].Get(), nullptr, rtv_heap_handle);
+            rtv_heap_handle.Offset(1, this->rtv_desc_size);
+        }
     }
 }
 

@@ -48,7 +48,6 @@ class App {
   private:
     bool executing = false;
     std::unique_ptr<Window> window;
-    std::unique_ptr<Renderer> renderer;
 };
 }  // namespace Nyx
 
