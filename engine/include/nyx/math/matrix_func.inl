@@ -1,5 +1,4 @@
 #include "matrix_func.h"
-
 #include "nyx/math/matrix4x4.h"
 #include "nyx/math/vector4.h"
 
@@ -7,7 +6,8 @@ namespace Nyx::Math {
 template <typename T>
 constexpr MatrixT<4, 4, T> transpose(const MatrixT<4, 4, T> &m)
 {
-    return MatrixT<4, 4, T>(VectorT<4, T>(m[0][0], m[1][0], m[2][0], m[3][0]),
+    return MatrixT<4, 4, T>(
+        VectorT<4, T>(m[0][0], m[1][0], m[2][0], m[3][0]),
         VectorT<4, T>(m[0][1], m[1][1], m[2][1], m[3][1]),
         VectorT<4, T>(m[0][2], m[1][2], m[2][2], m[3][2]),
         VectorT<4, T>(m[0][3], m[1][3], m[2][3], m[3][3]));
@@ -23,14 +23,15 @@ constexpr T determinant(const MatrixT<4, 4, T> &m)
     T sub_factor4 = m[2][0] * m[3][2] - m[3][0] * m[2][2];
     T sub_factor5 = m[2][0] * m[3][1] - m[3][0] * m[2][1];
 
-    VectorT<4, T> coef(+(m[1][1] * sub_factor0 - m[1][2] * sub_factor1 +
-                          m[1][3] * sub_factor2),
+    VectorT<4, T> coef(
+        +(m[1][1] * sub_factor0 - m[1][2] * sub_factor1 +
+          m[1][3] * sub_factor2),
         -(m[1][0] * sub_factor0 - m[1][2] * sub_factor3 +
-            m[1][3] * sub_factor4),
+          m[1][3] * sub_factor4),
         +(m[1][0] * sub_factor1 - m[1][1] * sub_factor3 +
-            m[1][3] * sub_factor5),
+          m[1][3] * sub_factor5),
         -(m[1][0] * sub_factor2 - m[1][1] * sub_factor4 +
-            m[1][2] * sub_factor5));
+          m[1][2] * sub_factor5));
 
     return m[0][0] * coef[0] + m[0][1] * coef[1] + m[0][2] * coef[2] +
            m[0][3] * coef[3];
@@ -96,26 +97,15 @@ constexpr MatrixT<R, C, T> inverse(const MatrixT<R, C, T> &m)
     return inverse * one_over_det;
 }
 
-template <typename T>
-std::ostream &operator<<(std::ostream &os, const MatrixT<4, 4, T> &m)
+template <size_t R, size_t C, typename T>
+constexpr std::string to_string(const MatrixT<R, C, T> &m)
 {
-    return os << std::format("{}", m);
+    return std::format("{}", m);
+}
+
+template <size_t R, size_t C, typename T>
+inline std::ostream &operator<<(std::ostream &os, const MatrixT<R, C, T> &m)
+{
+    return os << to_string(m);
 }
 }  // namespace Nyx::Math
-
-template <typename T>
-constexpr auto std::formatter<Nyx::Math::MatrixT<4, 4, T>>::parse(
-    std::format_parse_context &ctx)
-{
-    return ctx.begin();
-}
-
-template <typename T>
-auto std::formatter<Nyx::Math::MatrixT<4, 4, T>>::format(
-    const Nyx::Math::MatrixT<4, 4, T> &m, std::format_context &ctx) const
-{
-    return std::format_to(ctx.out(),
-        "|{},{},{},{}|\n|{},{},{},{}|\n|{},{},{},{}|\n|{},{},{},{}|", m[0][0],
-        m[1][0], m[2][0], m[3][0], m[0][1], m[1][1], m[2][1], m[3][1], m[0][2],
-        m[1][2], m[2][2], m[3][2], m[0][3], m[1][3], m[2][3], m[3][3]);
-}

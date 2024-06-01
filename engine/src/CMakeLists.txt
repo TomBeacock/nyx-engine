@@ -14,7 +14,7 @@ add_library(nyx STATIC
 
 	"../include/nyx/events.h"
 	"../include/nyx/events/event.h" "../include/nyx/events/event.inl"
-	"../include/nyx/events/key_codes.h"
+	"../include/nyx/events/key_codes.h" "../include/nyx/events/key_codes.inl"
 	"../include/nyx/events/mouse_codes.h"
 	
 	"../include/nyx/math.h"

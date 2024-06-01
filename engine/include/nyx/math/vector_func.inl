@@ -37,7 +37,9 @@ constexpr T dot(const VectorT<4, T> &v1, const VectorT<4, T> &v2)
 
 template <size_t L, typename T>
 constexpr VectorT<L, T> lerp(
-    const VectorT<L, T> &v1, const VectorT<L, T> &v2, float t)
+    const VectorT<L, T> &v1,
+    const VectorT<L, T> &v2,
+    float t)
 {
     return v1 + (v2 - v1) * t;
 }
@@ -56,7 +58,8 @@ constexpr VectorT<L, T> normalize(const VectorT<L, T> &v)
 
 template <size_t L, typename T>
 constexpr VectorT<L, T> reflect(
-    const VectorT<L, T> &v, const VectorT<L, T> &normal)
+    const VectorT<L, T> &v,
+    const VectorT<L, T> &normal)
 {
     return v - normal * dot(v, normal) * static_cast<T>(2);
 }
@@ -74,50 +77,8 @@ constexpr std::string to_string(const VectorT<L, T> &v)
 }
 
 template <size_t L, typename T>
-std::ostream &operator<<(std::ostream &os, const VectorT<L, T> &v)
+inline std::ostream &operator<<(std::ostream &os, const VectorT<L, T> &v)
 {
     return os << to_string(v);
 }
 }  // namespace Nyx::Math
-
-template <typename T>
-constexpr auto std::formatter<Nyx::Math::VectorT<2, T>>::parse(
-    std::format_parse_context &ctx)
-{
-    return ctx.begin();
-}
-
-template <typename T>
-auto std::formatter<Nyx::Math::VectorT<2, T>>::format(
-    const Nyx::Math::VectorT<2, T> &v, std::format_context &ctx) const
-{
-    return std::format_to(ctx.out(), "[{},{}]", v.x, v.y);
-}
-
-template <typename T>
-constexpr auto std::formatter<Nyx::Math::VectorT<3, T>>::parse(
-    std::format_parse_context &ctx)
-{
-    return ctx.begin();
-}
-
-template <typename T>
-auto std::formatter<Nyx::Math::VectorT<3, T>>::format(
-    const Nyx::Math::VectorT<3, T> &v, std::format_context &ctx) const
-{
-    return std::format_to(ctx.out(), "[{},{},{}]", v.x, v.y, v.z);
-}
-
-template <typename T>
-constexpr auto std::formatter<Nyx::Math::VectorT<4, T>>::parse(
-    std::format_parse_context &ctx)
-{
-    return ctx.begin();
-}
-
-template <typename T>
-auto std::formatter<Nyx::Math::VectorT<4, T>>::format(
-    const Nyx::Math::VectorT<4, T> &v, std::format_context &ctx) const
-{
-    return std::format_to(ctx.out(), "[{},{},{},{}]", v.x, v.y, v.z, v.w);
-}

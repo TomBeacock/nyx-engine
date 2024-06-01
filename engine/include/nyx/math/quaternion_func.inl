@@ -61,4 +61,16 @@ QuaternionT<T> rotate(
     const QuaternionT<T> q2(tmp_axis.x * s, tmp_axis.y * s, tmp_axis.z * s, c);
     return q * q2;
 }
+
+template <size_t L, typename T>
+constexpr std::string to_string(const QuaternionT<T> &q)
+{
+    return std::format("{}", q);
+}
+
+template <size_t L, typename T>
+inline std::ostream &operator<<(std::ostream &os, const QuaternionT<T> &q)
+{
+    return os << to_string(q);
+}
 }  // namespace Nyx::Math
