@@ -26,6 +26,7 @@ RendererImpl::RendererImpl()
       use_warp_device(false),
       rtv_desc_size(),
       vertex_buffer_view(),
+      index_buffer_view(),
       constant_buffer_data(),
       cbv_data_begin(nullptr),
       frame_index(),
@@ -82,7 +83,8 @@ void RendererImpl::render()
 {
     record_command_list();
     std::array<ID3D12CommandList *, 1> command_lists = {
-        this->command_list.Get()};
+        this->command_list.Get(),
+    };
     this->command_queue->ExecuteCommandLists(
         static_cast<UINT>(command_lists.size()), command_lists.data());
     DX::ThrowIfFailed(this->swap_chain->Present(1, 0));
@@ -161,10 +163,11 @@ void RendererImpl::load_pipeline(Nat32 width, Nat32 height, HWND handle)
         }
     }
 
-    // Create command queue{
+    // Create command queue
     {
         D3D12_COMMAND_QUEUE_DESC queue_desc{
             .Type = D3D12_COMMAND_LIST_TYPE_DIRECT,
+            .Priority = D3D12_COMMAND_QUEUE_PRIORITY_HIGH,
             .Flags = D3D12_COMMAND_QUEUE_FLAG_NONE,
         };
         DX::ThrowIfFailed(this->device->CreateCommandQueue(
@@ -378,7 +381,22 @@ void RendererImpl::load_assets()
                 },
             .BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
             .SampleMask = UINT_MAX,
-            .RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
+            .RasterizerState =
+                D3D12_RASTERIZER_DESC{
+                    .FillMode = D3D12_FILL_MODE_SOLID,
+                    .CullMode = D3D12_CULL_MODE_BACK,
+                    .FrontCounterClockwise = TRUE,
+                    .DepthBias = D3D12_DEFAULT_DEPTH_BIAS,
+                    .DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP,
+                    .SlopeScaledDepthBias =
+                        D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS,
+                    .DepthClipEnable = TRUE,
+                    .MultisampleEnable = FALSE,
+                    .AntialiasedLineEnable = FALSE,
+                    .ForcedSampleCount = 0,
+                    .ConservativeRaster =
+                        D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF,
+                },
             .DepthStencilState =
                 D3D12_DEPTH_STENCIL_DESC{
                     .DepthEnable = FALSE,
@@ -419,10 +437,11 @@ void RendererImpl::load_assets()
 
     // Create vertex buffer
     {
-        std::array<Vertex, 3> vertex_data = {
-            Vertex{{0.0f, 0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
-            Vertex{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
-            Vertex{{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+        std::array<Vertex, 4> vertex_data = {
+            Vertex{{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+            Vertex{{0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
+            Vertex{{0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 0.0f}},
+            Vertex{{-0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
         };
         const size_t vertex_data_size = vertex_data.size() * sizeof(Vertex);
 
@@ -453,6 +472,39 @@ void RendererImpl::load_assets()
             static_cast<UINT>(sizeof(Vertex));
         this->vertex_buffer_view.SizeInBytes =
             static_cast<UINT>(vertex_data_size);
+    }
+
+    // Create index buffer
+    {
+        std::array<UINT, 6> index_data = {0, 1, 2, 0, 2, 3};
+        const size_t index_data_size = index_data.size() * sizeof(UINT);
+
+        // TODO: Replace with more efficient heap upload method
+        CD3DX12_HEAP_PROPERTIES heap_props(D3D12_HEAP_TYPE_UPLOAD);
+        auto res_desc =
+            CD3DX12_RESOURCE_DESC::Buffer(static_cast<UINT>(index_data_size));
+        DX::ThrowIfFailed(this->device->CreateCommittedResource(
+            &heap_props,
+            D3D12_HEAP_FLAG_NONE,
+            &res_desc,
+            D3D12_RESOURCE_STATE_GENERIC_READ,
+            nullptr,
+            IID_PPV_ARGS(&this->index_buffer)));
+
+        // Copy index data to index buffer
+        UINT8 *index_data_begin = nullptr;
+        CD3DX12_RANGE read_range(0, 0);
+        DX::ThrowIfFailed(this->index_buffer->Map(
+            0, &read_range, reinterpret_cast<void **>(&index_data_begin)));
+        memcpy(index_data_begin, index_data.data(), index_data_size);
+        this->index_buffer->Unmap(0, nullptr);
+
+        // Initialize index buffer view
+        this->index_buffer_view.BufferLocation =
+            this->index_buffer->GetGPUVirtualAddress();
+        this->index_buffer_view.Format = DXGI_FORMAT_R32_UINT;
+        this->index_buffer_view.SizeInBytes =
+            static_cast<UINT>(index_data_size);
     }
 
     // Create constant buffer
@@ -556,7 +608,8 @@ void RendererImpl::record_command_list()
     this->command_list->IASetPrimitiveTopology(
         D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     this->command_list->IASetVertexBuffers(0, 1, &this->vertex_buffer_view);
-    this->command_list->DrawInstanced(3, 1, 0, 0);
+    this->command_list->IASetIndexBuffer(&this->index_buffer_view);
+    this->command_list->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
     // Indicate that the back buffer will now be used to present
     barrier = CD3DX12_RESOURCE_BARRIER::Transition(

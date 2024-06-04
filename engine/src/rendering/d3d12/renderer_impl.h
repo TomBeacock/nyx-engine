@@ -68,7 +68,9 @@ class RendererImpl : public Nyx::RendererImpl {
 
     // App resources
     Microsoft::WRL::ComPtr<ID3D12Resource> vertex_buffer;
+    Microsoft::WRL::ComPtr<ID3D12Resource> index_buffer;
     D3D12_VERTEX_BUFFER_VIEW vertex_buffer_view;
+    D3D12_INDEX_BUFFER_VIEW index_buffer_view;
     Microsoft::WRL::ComPtr<ID3D12Resource> constant_buffer;
     ConstantBufferData constant_buffer_data;
     UINT8 *cbv_data_begin;
